@@ -7,6 +7,7 @@ import frontEndCompilador.enums.TokenPreDefinido
 class RegraEstrutura {
     protected static List<TokenPreDefinido> pilhaTokensLidos = []
     protected static List<DTOToken> listaDtoFornecida
+    protected static NodeToken nodeToken = null
     protected List<DTOHashToken> chaveProximoPasso
     protected RegraEstrutura anterior
 
@@ -19,6 +20,10 @@ class RegraEstrutura {
         listaDtoFornecida = listaDto
     }
 
+    static void setNodeToken(NodeToken nodeToken) {
+        this.nodeToken = nodeToken
+    }
+
     void analisaChaveFornecida(RegraEstrutura anterior) {
         if (!listaDtoFornecida) {
             return
@@ -29,9 +34,9 @@ class RegraEstrutura {
         DTOHashToken dtoHashTokenComProximoPasso = chaveProximoPasso.find { DTOHashToken dto ->
             dto.tokenChave == TokenPreDefinido.obtemToken(dtoTokenFornecida.desc)
         }
-
+        setNodeToken(new NodeToken(dtoTokenFornecida))
         if (!dtoHashTokenComProximoPasso) {
-            if(anterior) {
+            if (anterior) {
                 anterior.analisaChaveFornecida(anterior.anterior)
             }
             verificaExcessao()
@@ -45,7 +50,6 @@ class RegraEstrutura {
             return
         }
         proximaEtapa.analisaChaveFornecida(this)
-
     }
 
     protected void verificaExcessao() {}

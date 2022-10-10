@@ -1,7 +1,5 @@
 class Main inherits IO {
  main() : SELF_TYPE {
- (*comentario teste
- *)
  }
 	(let c : Complex <- (new Complex).init(1, 1) in
 	 if c.reflect_X().reflect_Y() = c.reflect_0()

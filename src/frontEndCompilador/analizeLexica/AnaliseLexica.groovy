@@ -112,10 +112,10 @@ class AnaliseLexica {
         if (tokenBufferAnalise) {
             return listaDTO
         }
-        int qtdPos = 1
+
         while (bufferAnalise.length() > 1) {
             caracterAnterior = bufferAnalise[0]
-            bufferAnalise = bufferAnalise.length() > 1 ? bufferAnalise.substring((qtdPos > 0 ? qtdPos : 1)) : bufferAnalise
+            bufferAnalise = bufferAnalise.length() > 1 ? bufferAnalise.substring(1) : bufferAnalise
             tokenBufferAnalise = TokenPreDefinido.obtemToken(bufferAnalise)
             tokenCaracterAnterior = TokenPreDefinido.obtemToken(caracterAnterior)
             if (tokenCaracterAnterior) {
@@ -124,8 +124,6 @@ class AnaliseLexica {
             if (tokenBufferAnalise) {
                 listaDTO.add(new DTOToken(tokenBufferAnalise))
             }
-            qtdPos = (tokenBufferAnalise ? tokenBufferAnalise.simb.length() : 0) +
-                    (tokenCaracterAnterior ? tokenCaracterAnterior.simb.length() : 0)
         }
         return listaDTO
     }
@@ -170,7 +168,7 @@ class AnaliseLexica {
         for (int pos = dto.posInicioLista; pos <= dto.posFinalLista; pos++) [
                 listaTratada.remove(dto.posInicioLista)
         ]
-        listaTratada.add(dto.posInicioLista, new DTOToken(2, simb, 'TEXTO'))
+        listaTratada.add(dto.posInicioLista, new DTOToken(simb, 'TEXTO'))
         return listaTratada
     }
 
@@ -184,7 +182,7 @@ class AnaliseLexica {
 
     private static void trataCasoToken(String simb, int pos, DTOSecundario dtoSec, List<DTOSecundario> listaDTOTratamentoSecundario) {
         if(!dtoSec || !dtoSec.verificaToken(simb)){
-            return;
+            return
         }
         if (dtoSec.condicaoInicial(simb)) {
             dtoSec.flagAdicionarLista = true

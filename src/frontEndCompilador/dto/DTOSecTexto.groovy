@@ -8,7 +8,7 @@ class DTOSecTexto extends DTOSecundario {
         this.condicaoInicial = (Closure<Boolean>) { String simb -> simb.contains(TokenPreDefinido.ASPA_DUPLA.simb) && !this.flagAdicionarLista }
         this.condicaoFinal = (Closure<Boolean>) { String simb -> simb == TokenPreDefinido.ASPA_DUPLA.simb }
         this.desc = 'TEXTO'
-        this.tokenMarcador = Token.ASPA_DUPLA.simb
+        this.tokenMarcador = TokenPreDefinido.ASPA_DUPLA.simb
     }
 
 }
