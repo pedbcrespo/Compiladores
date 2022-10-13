@@ -8,6 +8,11 @@ import frontEndCompilador.enums.TokenPreDefinido
 class Expressao extends RegraEstrutura {
     List<List<TokenPreDefinido>> sequenciasAceitas = [
             [
+                    TokenPreDefinido.IDENTIFICADOR,
+                    TokenPreDefinido.ATRIBUICAO,
+                    TokenPreDefinido.TEXTO,
+            ],
+            [
                     TokenPreDefinido.IF,
                     TokenPreDefinido.THEN,
                     TokenPreDefinido.ELSE,
@@ -35,11 +40,13 @@ class Expressao extends RegraEstrutura {
             [TokenPreDefinido.ATRIBUICAO, TokenPreDefinido.PONTO_VIRGULA],
             [TokenPreDefinido.ATRIBUICAO, TokenPreDefinido.VIRGULA],
             [TokenPreDefinido.IDENTIFICADOR, TokenPreDefinido.IDENTIFICADOR],
+            [TokenPreDefinido.TEXTO, TokenPreDefinido.TEXTO],
     ]
 
     Expressao() {
         super([
                 new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> null }),
+                new DTOHashToken(TokenPreDefinido.TEXTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ATRIBUICAO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FECHA_PARENTESES, { -> null }),
@@ -107,7 +114,7 @@ class Expressao extends RegraEstrutura {
                 List<TokenPreDefinido> lista -> lista.containsAll([anterior, tokenDto])
             }
             anterior = tokenDto
-            if(casoErro) {
+            if (casoErro) {
                 throw new Exception("ERRO ${pilhaDtoLida[0].desc} SEQUENCIA INVALIDA")
             }
         }
