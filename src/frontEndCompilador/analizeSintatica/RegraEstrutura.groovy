@@ -28,6 +28,9 @@ class RegraEstrutura {
                 if(validaExcessaoToken(dtoTokenFornecida))
                     return
             }
+            if(!listaDtoFornecida) {
+                validaAbreFecha()
+            }
         }
     }
 
@@ -50,6 +53,26 @@ class RegraEstrutura {
             return true
         }
         proximaEtapa.analisa()
+        return true
+    }
+
+    protected Boolean validaAbreFecha() {
+        if(pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_CHAVE.name() ||
+                pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_PARENTESES.name()){
+            return true
+        }
+        int paridadeAbreFechaChave = 0
+        int paridadeAbreFechaParenteses = 0
+        for (DTOToken dto: pilhaDtoLida) {
+            TokenPreDefinido token = TokenPreDefinido.obtemToken(dto.desc)
+            paridadeAbreFechaChave += token == TokenPreDefinido.ABRE_CHAVE? 1:
+                    token == TokenPreDefinido.FECHA_CHAVE? -1: 0
+            paridadeAbreFechaParenteses += token == TokenPreDefinido.ABRE_PARENTESES? 1:
+                    token == TokenPreDefinido.FECHA_PARENTESES? -1: 0
+        }
+        if(paridadeAbreFechaParenteses != 0 || paridadeAbreFechaChave != 0) {
+            throw new Exception("ERROR PARENTES OU CHAVES FALTANDO")
+        }
         return true
     }
 
