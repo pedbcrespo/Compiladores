@@ -2,6 +2,7 @@ package frontEndCompilador.analizeSintatica.regras
 
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
+import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class Programa extends RegraEstrutura {
@@ -12,7 +13,7 @@ class Programa extends RegraEstrutura {
         ])
     }
 
-    protected void verificaExcessao() {
-        throw new Exception("ERRO TOKEN ${pilhaTokensLidos[0]} INVALIDO")
+    protected Boolean validaExcessaoToken(DTOToken dtoToken) {
+        throw new Exception("ERRO TOKEN: ${pilhaDtoLida[0].simb}")
     }
 }

@@ -5,15 +5,44 @@ import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class Classe extends RegraEstrutura {
+
+    private List<TokenPreDefinido> sequenciaAceita1 = [
+            TokenPreDefinido.IDENTIFICADOR,
+            TokenPreDefinido.INHERITS,
+            TokenPreDefinido.IDENTIFICADOR,
+            TokenPreDefinido.ABRE_CHAVE
+    ]
+
+    private List<TokenPreDefinido> sequenciaAceita2 = [
+            TokenPreDefinido.IDENTIFICADOR,
+            TokenPreDefinido.ABRE_CHAVE,
+    ]
+
     Classe() {
         super([
-                new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> new ClasseHeranca() }),
-                new DTOHashToken(TokenPreDefinido.PONTO_VIRGULA, { -> null })
+                new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> null }),
+                new DTOHashToken(TokenPreDefinido.INHERITS, { -> null }),
+                new DTOHashToken(TokenPreDefinido.ABRE_CHAVE, { -> new RFeature() }),
+                new DTOHashToken(TokenPreDefinido.FECHA_CHAVE, { -> null }),
+                new DTOHashToken(TokenPreDefinido.PONTO_VIRGULA, { -> null }),
         ])
     }
 
     @Override
-    protected void verificaExcessao() {
-        throw new Exception("ERRO TOKEN ${listaDtoFornecida[0]} INVALIDO\n")
+    protected void validacaoSequenciaTokens() {
+        Boolean sequenciaValida = true
+        for (int pos = 0; pos < pilhaTokensLidosPorInstancia.size(); pos++) {
+            if (pos < sequenciaAceita1.size()) {
+                sequenciaValida = sequenciaValida && (
+                        pilhaTokensLidosPorInstancia[pos] == sequenciaAceita1[pos] ||
+                                pilhaTokensLidosPorInstancia[pos] == sequenciaAceita2[pos]
+                )
+            } else if (pos < sequenciaAceita2.size()) {
+                sequenciaValida = sequenciaValida && pilhaTokensLidosPorInstancia[pos] == sequenciaAceita2[pos]
+            }
+        }
+        if(!sequenciaValida) {
+            throw new Exception("ERRO SEQUENCIA INVALIDA: ${pilhaDtoLida[0]}")
+        }
     }
 }
