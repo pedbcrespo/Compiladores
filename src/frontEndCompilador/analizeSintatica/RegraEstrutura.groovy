@@ -40,23 +40,7 @@ class RegraEstrutura {
         return true
     }
 
-    private Boolean validaProximaEtapa(DTOToken dtoToken) {
-        DTOHashToken dtoHashTokenComProximoPasso = chaveProximoPasso.find { DTOHashToken dto ->
-            dto.tokenChave == TokenPreDefinido.obtemToken(dtoToken.desc)
-        }
-        if (!dtoHashTokenComProximoPasso) {
-            desfazProcessoAdicaoPilha()
-            return false
-        }
-        RegraEstrutura proximaEtapa = dtoHashTokenComProximoPasso.proximaEtapa()
-        if (!proximaEtapa) {
-            return true
-        }
-        proximaEtapa.analisa()
-        return true
-    }
-
-    protected Boolean validaAbreFecha() {
+    private Boolean validaAbreFecha() {
         if(pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_CHAVE.name() ||
                 pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_PARENTESES.name()){
             return true
@@ -73,6 +57,22 @@ class RegraEstrutura {
         if(paridadeAbreFechaParenteses != 0 || paridadeAbreFechaChave != 0) {
             throw new Exception("ERROR PARENTES OU CHAVES FALTANDO")
         }
+        return true
+    }
+
+    private Boolean validaProximaEtapa(DTOToken dtoToken) {
+        DTOHashToken dtoHashTokenComProximoPasso = chaveProximoPasso.find { DTOHashToken dto ->
+            dto.tokenChave == TokenPreDefinido.obtemToken(dtoToken.desc)
+        }
+        if (!dtoHashTokenComProximoPasso) {
+            desfazProcessoAdicaoPilha()
+            return false
+        }
+        RegraEstrutura proximaEtapa = dtoHashTokenComProximoPasso.proximaEtapa()
+        if (!proximaEtapa) {
+            return true
+        }
+        proximaEtapa.analisa()
         return true
     }
 
