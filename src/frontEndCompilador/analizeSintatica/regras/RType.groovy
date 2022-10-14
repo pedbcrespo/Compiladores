@@ -2,7 +2,6 @@ package frontEndCompilador.analizeSintatica.regras
 
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
-import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class RType extends RegraEstrutura {
