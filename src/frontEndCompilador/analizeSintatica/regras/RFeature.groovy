@@ -9,12 +9,15 @@ class RFeature extends RegraEstrutura {
             { TokenPreDefinido anterior, TokenPreDefinido token ->
                 token == TokenPreDefinido.ABRE_PARENTESES && anterior == TokenPreDefinido.IDENTIFICADOR
             },
-            { TokenPreDefinido anterior, TokenPreDefinido token ->
-                token == TokenPreDefinido.DOIS_PONTOS && anterior == TokenPreDefinido.IDENTIFICADOR
-            },
+//            { TokenPreDefinido anterior, TokenPreDefinido token ->
+//                token == TokenPreDefinido.DOIS_PONTOS && anterior == TokenPreDefinido.IDENTIFICADOR
+//            },
             { TokenPreDefinido anterior, TokenPreDefinido token ->
                 token == TokenPreDefinido.IDENTIFICADOR &&
                         (anterior == null || anterior == TokenPreDefinido.VIRGULA)
+            },
+            { TokenPreDefinido anterior, TokenPreDefinido token ->
+                token == TokenPreDefinido.DOIS_PONTOS && anterior == TokenPreDefinido.FECHA_PARENTESES
             },
     ]
 

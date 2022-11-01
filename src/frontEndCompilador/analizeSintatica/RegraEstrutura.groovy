@@ -9,32 +9,41 @@ class RegraEstrutura {
     protected static List<DTOToken> listaDtoFornecida
     protected static List<DTOToken> pilhaDtoLida = []
     protected List<DTOHashToken> chaveProximoPasso
+    protected NodeToken nodeToken
 
     RegraEstrutura(List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
+        this.nodeToken = new NodeToken(null, null)
     }
 
     static void setListaDtoTokenFornecida(List<DTOToken> listaDto) {
         listaDtoFornecida = listaDto
     }
 
-    void analisa() {
+    NodeToken analisa(NodeToken anterior) {
+        nodeToken.anterior = anterior
         while (listaDtoFornecida.size() > 0) {
             DTOToken dtoTokenFornecida = listaDtoFornecida[0]
             adicionaTokenPilha(dtoTokenFornecida)
+            adicionaNodeSubArvore(dtoTokenFornecida)
             removePrimeiroElementoListaToken()
             validacaoSequenciaTokens()
             if (!validaProximaEtapa(dtoTokenFornecida)) {
                 if(validaExcessaoToken(dtoTokenFornecida))
-                    return
+                    break
             }
             if(!listaDtoFornecida) {
                 validaAbreFecha()
             }
         }
+        return nodeToken
     }
 
     protected void validacaoSequenciaTokens() {}
+
+    protected void adicionaNodeSubArvore(DTOToken dtoToken){
+        nodeToken.addNode(dtoToken)
+    }
 
     protected Boolean validaExcessaoToken(DTOToken dtoToken) {
         return true
@@ -72,7 +81,7 @@ class RegraEstrutura {
         if (!proximaEtapa) {
             return true
         }
-        proximaEtapa.analisa()
+        nodeToken.addSubArvore(proximaEtapa.analisa(nodeToken))
         return true
     }
 

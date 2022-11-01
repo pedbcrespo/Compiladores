@@ -7,33 +7,25 @@ class NodeToken {
     NodeToken anterior
     List<NodeToken> proximosNodes
 
-    NodeToken(NodeToken anterior) {
+    NodeToken(DTOToken dto, NodeToken anterior = null) {
+        this.dtoToken = dto
         this.anterior = anterior
-        this.dtoToken = null
         this.proximosNodes = []
-
     }
 
-    NodeToken armazenaDTO(DTOToken dto) {
-        dtoToken = dto
-        return addRamificacao(new NodeToken(this))
-    }
-
-    private NodeToken addRamificacao(NodeToken proximoNode) {
-        proximosNodes.add(0, proximoNode)
-        return proximoNode
-    }
-
-    private String formataStringImpressao(int qtdTabs) {
-        String tabs = qtdTabs > 0 ? '\t'.repeat(qtdTabs) : ''
-        String dtoEmTexto = dtoToken.simb!=null ?: 'null'
-        return tabs + dtoEmTexto
-    }
-
-    void imprime(int qtdTabs = 0) {
-        println(this.formataStringImpressao(qtdTabs))
-        for (NodeToken nodeToken : proximosNodes) {
-            nodeToken.imprime(proximosNodes.indexOf(nodeToken) + 1)
+    void addNode(DTOToken dto) {
+        if (dto == dtoToken) {
+            return
+        } else if (!dtoToken) {
+            dtoToken = dto
+        } else if (!proximosNodes) {
+            proximosNodes.add(new NodeToken(dto))
+        } else {
+            proximosNodes.forEach(node -> node.addNode(dto))
         }
+    }
+
+    void addSubArvore(NodeToken subArvore) {
+        proximosNodes.add(subArvore)
     }
 }

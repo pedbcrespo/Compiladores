@@ -20,4 +20,23 @@ class DTOToken {
     String toString() {
         return "DTOToken{ simb= '${simb}', desc= '${desc}'}"
     }
+
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (!(o instanceof DTOToken)) return false
+
+        DTOToken dtoToken = (DTOToken) o
+
+        if (desc != dtoToken.desc) return false
+        if (simb != dtoToken.simb) return false
+
+        return true
+    }
+
+    int hashCode() {
+        int result
+        result = simb.hashCode()
+        result = 31 * result + desc.hashCode()
+        return result
+    }
 }

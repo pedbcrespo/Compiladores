@@ -43,24 +43,24 @@ class Expressao extends RegraEstrutura {
             [TokenPreDefinido.TEXTO, TokenPreDefinido.TEXTO],
     ]
 
-    Expressao() {
-        super([
+    private static List<DTOHashToken> geraListaToken() {
+        return [
                 new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> null }),
                 new DTOHashToken(TokenPreDefinido.TEXTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ATRIBUICAO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FECHA_PARENTESES, { -> null }),
-                new DTOHashToken(TokenPreDefinido.IF, { -> new Expressao() }),
-                new DTOHashToken(TokenPreDefinido.THEN, { -> new Expressao() }),
-                new DTOHashToken(TokenPreDefinido.ELSE, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.IF, { -> null }),
+                new DTOHashToken(TokenPreDefinido.THEN, { -> null }),
+                new DTOHashToken(TokenPreDefinido.ELSE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.FI, { -> null }),
-                new DTOHashToken(TokenPreDefinido.WHILE, { -> new Expressao() }),
-                new DTOHashToken(TokenPreDefinido.LOOP, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.WHILE, { -> null }),
+                new DTOHashToken(TokenPreDefinido.LOOP, { -> null }),
                 new DTOHashToken(TokenPreDefinido.POOL, { -> null }),
                 new DTOHashToken(TokenPreDefinido.LET, { -> null }),
                 new DTOHashToken(TokenPreDefinido.DOIS_PONTOS, { -> new RType() }),
                 new DTOHashToken(TokenPreDefinido.IN, { -> null }),
-                new DTOHashToken(TokenPreDefinido.CASE, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.CASE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.OF, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ESAC, { -> null }),
                 new DTOHashToken(TokenPreDefinido.NEW, { -> new RType() }),
@@ -73,8 +73,13 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.FALSE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.VIRGULA, { -> null }),
                 new DTOHashToken(TokenPreDefinido.PONTO_VIRGULA, { -> null }),
-        ])
+        ]
     }
+
+    Expressao() {
+        super(geraListaToken())
+    }
+
 
     protected void validacaoSequenciaTokens() {
         Boolean houveMatchTokes = false
@@ -120,6 +125,4 @@ class Expressao extends RegraEstrutura {
         }
         return true
     }
-
-
 }

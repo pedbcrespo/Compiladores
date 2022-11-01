@@ -10,11 +10,18 @@ class RType extends RegraEstrutura {
     RType() {
         super([
                 new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> null }),
+                new DTOHashToken(TokenPreDefinido.SELF, { -> null }),
+                new DTOHashToken(TokenPreDefinido.SELF_TYPE, { -> null }),
         ])
     }
 
     protected void validacaoSequenciaTokens() {
-        if (pilhaTokensLidosPorInstancia[0] != TokenPreDefinido.IDENTIFICADOR) {
+        List<TokenPreDefinido> listaTokensChaves = [
+                TokenPreDefinido.IDENTIFICADOR,
+                TokenPreDefinido.SELF,
+                TokenPreDefinido.SELF_TYPE
+        ]
+        if (!listaTokensChaves.contains(pilhaTokensLidosPorInstancia[0])) {
             throw new Exception("ERROR ${pilhaTokensLidosPorInstancia[0]} SEQUENCIA INVALIDA")
         }
 
