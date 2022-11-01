@@ -10,8 +10,7 @@ class AnaliseSintaticaService {
     static NodeToken analisa(List<DTOToken> dtoTokens) {
         RegraEstrutura.setListaDtoTokenFornecida(dtoTokens)
         Programa programa = new Programa()
-        programa.analisa()
-        return null
+        return programa.analisa(null)
     }
 
 

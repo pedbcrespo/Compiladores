@@ -28,4 +28,13 @@ class NodeToken {
     void addSubArvore(NodeToken subArvore) {
         proximosNodes.add(subArvore)
     }
+
+    void imprime() {
+        imprimeNode()
+        proximosNodes.forEach( node -> node.imprime())
+    }
+
+    private void imprimeNode() {
+        println dtoToken.simb + " => "
+    }
 }
