@@ -1,6 +1,7 @@
+import frontEndCompilador.analiseSemantica.AnaliseSemantica
 import frontEndCompilador.analizeLexica.AnaliseLexica
 import frontEndCompilador.analizeSintatica.AnaliseSintatica
-
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.dto.DTOToken
 
 class CompileCool {
@@ -9,6 +10,7 @@ class CompileCool {
         for (DTOToken token : listaTokens) {
             println(token)
         }
-        AnaliseSintatica.analisaTokens(listaTokens)
+        NodeToken arvoreGerada = AnaliseSintatica.analisaTokens(listaTokens)
+        AnaliseSemantica.analisaArvore(listaTokens)
     }
 }
