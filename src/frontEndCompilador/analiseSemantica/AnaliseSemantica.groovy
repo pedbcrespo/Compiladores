@@ -12,5 +12,6 @@ class AnaliseSemantica {
 
     static void analisaArvore(List<DTOToken> listaDto) {
         List<BlocoToken> listaBlocoToken = AnaliseSemanticaService.organizaBlocos(listaDto)
+        listaBlocoToken.findResults{ BlocoToken bloco -> bloco.validade()}
     }
 }

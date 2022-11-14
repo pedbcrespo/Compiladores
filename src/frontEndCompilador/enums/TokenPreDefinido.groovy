@@ -14,7 +14,7 @@ enum TokenPreDefinido {
     ATRIBUICAO('<-'),
     DOIS_PONTOS(':'),
     PONTO_VIRGULA(';'),
-//    PONTO('.'),
+    PONTO('.'),
     IGUALDADE('='),
     COMENTARIO_LINHA('--'),
     ABRE_COMENTARIO_BLOCO('(*'),
@@ -50,7 +50,8 @@ enum TokenPreDefinido {
     MAIOR('>'),
     MENOR('<'),
     MAIOR_IGUAL('>='),
-    MENOR_IGUAL('<=')
+    MENOR_IGUAL('<='),
+    BLOCO_SEMANTICO(null)
 
     String simb
 

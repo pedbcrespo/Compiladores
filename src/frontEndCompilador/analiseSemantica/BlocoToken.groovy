@@ -6,7 +6,8 @@ class BlocoToken {
     DTOToken dtoCabeca
     DTOToken dtoHeranca
     List<DTOToken> dtosContidos
-    protected String mensagemErro
+    private String mensagemErro
+    private valido = true
 
     BlocoToken(List<DTOToken> dtosContidos) {
         this.dtosContidos = dtosContidos
@@ -18,17 +19,13 @@ class BlocoToken {
         this.dtosContidos = dtosContidos
     }
 
-    boolean analiza() {
-        if (identificaSemantica()) {
-            return true
-        } else {
+    void setValido(valido) {
+        this.valido = valido
+    }
+
+    void validade() {
+        if(!valido){
             throw new Exception(mensagemErro)
         }
     }
-
-    protected boolean identificaSemantica() {
-
-    }
-
-
 }
