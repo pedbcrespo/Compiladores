@@ -68,5 +68,4 @@ enum TokenPreDefinido {
         tokenEscolhido.simb = simb
         return tokenEscolhido
     }
-
 }

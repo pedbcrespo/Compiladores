@@ -3,38 +3,30 @@ package frontEndCompilador.analizeSintatica
 import frontEndCompilador.dto.DTOToken
 
 class NodeToken {
-    DTOToken dtoToken
-    NodeToken anterior
+    RegraEstrutura regraNode
+    List<DTOToken> dtosDaMesmaRegra
     List<NodeToken> proximosNodes
 
-    NodeToken(DTOToken dto, NodeToken anterior = null) {
-        this.dtoToken = dto
-        this.anterior = anterior
+    NodeToken(RegraEstrutura regra) {
+        this.regraNode = regra
+        this.dtosDaMesmaRegra = [regra.dtoTokenFornecida]
         this.proximosNodes = []
     }
 
-    void addNode(DTOToken dto) {
-        if (dto == dtoToken) {
-            return
-        } else if (!dtoToken) {
-            dtoToken = dto
-        } else if (!proximosNodes) {
-            proximosNodes.add(new NodeToken(dto))
-        } else {
-            proximosNodes.forEach(node -> node.addNode(dto))
+    void addNode(RegraEstrutura regra) {
+        if(regra == regraNode) {
+            DTOToken dto = regra.dtoTokenFornecida
+            dtosDaMesmaRegra.add(dto)
+        }
+        else {
+            NodeToken nodeComRegra = proximosNodes.find{it -> it.regraNode == regra}
+            if(!nodeComRegra) {
+                proximosNodes.add(new NodeToken(regra))
+            }
         }
     }
 
-    void addSubArvore(NodeToken subArvore) {
-        proximosNodes.add(subArvore)
-    }
-
-    void imprime() {
-        imprimeNode()
-        proximosNodes.forEach( node -> node.imprime())
-    }
-
-    private void imprimeNode() {
-        println dtoToken.simb + " => "
+    void addNode(NodeToken node) {
+        proximosNodes.add(node)
     }
 }

@@ -1,5 +1,6 @@
 package frontEndCompilador.analizeSintatica.regras
 
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.dto.DTOToken
@@ -35,6 +36,14 @@ class Expressao extends RegraEstrutura {
                     TokenPreDefinido.ESAC
             ]
     ]
+
+    Expressao() {
+        super(geraListaToken())
+    }
+
+    Expressao(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
+        super(dtoToken, dtoHashTokens)
+    }
 
     private List<List<TokenPreDefinido>> listaCasosErro = [
             [TokenPreDefinido.ATRIBUICAO, TokenPreDefinido.PONTO_VIRGULA],
@@ -76,11 +85,6 @@ class Expressao extends RegraEstrutura {
         ]
     }
 
-    Expressao() {
-        super(geraListaToken())
-    }
-
-
     protected void validacaoSequenciaTokens() {
         Boolean houveMatchTokes = false
         for (List<TokenPreDefinido> listaSequencia : sequenciasAceitas) {
@@ -93,6 +97,16 @@ class Expressao extends RegraEstrutura {
             throw new Exception("ERRO TOKEN ${pilhaDtoLida[0]} INVALIDO")
         }
     }
+
+//    @Override
+//    protected void adicionaNodeSubArvore(){
+//        RegraEstrutura instancia = new Expressao(dtoTokenFornecida, this.chaveProximoPasso)
+//        if(!nodeToken) {
+//            nodeToken = new NodeToken(instancia)
+//            return
+//        }
+//        nodeToken.addNode(instancia)
+//    }
 
     private Boolean analizaSequencia(List<TokenPreDefinido> listaSequencia) {
         Boolean valido = true

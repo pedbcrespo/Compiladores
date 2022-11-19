@@ -1,7 +1,9 @@
 package frontEndCompilador.analizeSintatica.regras
 
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
+import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class RFeature extends RegraEstrutura {
@@ -35,6 +37,10 @@ class RFeature extends RegraEstrutura {
         ])
     }
 
+    RFeature(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
+        super(dtoToken, dtoHashTokens)
+    }
+
     @Override
     protected void validacaoSequenciaTokens() {
         if (pilhaTokensLidosPorInstancia.size() < 2) {
@@ -55,4 +61,14 @@ class RFeature extends RegraEstrutura {
             throw new Exception("ERROR SEQUENCIA ${pilhaDtoLida[0].simb} INVALIDA")
         }
     }
+
+//    @Override
+//    protected void adicionaNodeSubArvore(){
+//        RegraEstrutura instancia = new RFeature(dtoTokenFornecida, this.chaveProximoPasso)
+//        if(!nodeToken) {
+//            nodeToken = new NodeToken(instancia)
+//            return
+//        }
+//        nodeToken.addNode(instancia)
+//    }
 }

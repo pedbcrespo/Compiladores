@@ -1,7 +1,9 @@
 package frontEndCompilador.analizeSintatica.regras
 
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
+import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class RFormal extends RegraEstrutura {
@@ -17,6 +19,10 @@ class RFormal extends RegraEstrutura {
         ])
     }
 
+    RFormal(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
+        super(dtoToken, dtoHashTokens)
+    }
+
     @Override
     protected void validacaoSequenciaTokens() {
         int contSequenciaTokens = 0
@@ -30,4 +36,14 @@ class RFormal extends RegraEstrutura {
             throw new Exception("ERROR SEQUENCIA INVALIDA: ${pilhaDtoLida[0]}")
         }
     }
+
+//    @Override
+//    protected void adicionaNodeSubArvore(){
+//        RegraEstrutura instancia = new RFormal(dtoTokenFornecida, this.chaveProximoPasso)
+//        if(!nodeToken) {
+//            nodeToken = new NodeToken(instancia)
+//            return
+//        }
+//        nodeToken.addNode(instancia)
+//    }
 }

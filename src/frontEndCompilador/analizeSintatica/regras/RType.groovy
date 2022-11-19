@@ -1,7 +1,9 @@
 package frontEndCompilador.analizeSintatica.regras
 
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
+import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class RType extends RegraEstrutura {
@@ -15,6 +17,10 @@ class RType extends RegraEstrutura {
         ])
     }
 
+    RType(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
+        super(dtoToken, dtoHashTokens)
+    }
+
     protected void validacaoSequenciaTokens() {
         List<TokenPreDefinido> listaTokensChaves = [
                 TokenPreDefinido.IDENTIFICADOR,
@@ -26,4 +32,14 @@ class RType extends RegraEstrutura {
         }
 
     }
+
+//    @Override
+//    protected void adicionaNodeSubArvore(){
+//        RegraEstrutura instancia = new RType(dtoTokenFornecida, this.chaveProximoPasso)
+//        if(!nodeToken) {
+//            nodeToken = new NodeToken(instancia)
+//            return
+//        }
+//        nodeToken.addNode(instancia)
+//    }
 }

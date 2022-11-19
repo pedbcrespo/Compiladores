@@ -5,6 +5,7 @@ import frontEndCompilador.dto.DTOToken
 class BlocoToken {
     DTOToken dtoCabeca
     DTOToken dtoHeranca
+    int nivel
     List<DTOToken> dtosContidos
     private String mensagemErro
     private valido = true

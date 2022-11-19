@@ -8,31 +8,41 @@ class RegraEstrutura {
     protected List<TokenPreDefinido> pilhaTokensLidosPorInstancia = []
     protected static List<DTOToken> listaDtoFornecida
     protected static List<DTOToken> pilhaDtoLida = []
+    protected DTOToken dtoTokenFornecida
     protected List<DTOHashToken> chaveProximoPasso
     protected NodeToken nodeToken
 
     RegraEstrutura(List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
-        this.nodeToken = new NodeToken(null, null)
+        this.nodeToken = null
+    }
+
+    RegraEstrutura(DTOToken dtoTokenFornecida, List<DTOHashToken> chaveProximoPasso) {
+        this.dtoTokenFornecida = dtoTokenFornecida
+        this.chaveProximoPasso = chaveProximoPasso
+    }
+
+    RegraEstrutura(NodeToken nodeToken, List<DTOHashToken> chaveProximoPasso) {
+        this.chaveProximoPasso = chaveProximoPasso
+        this.nodeToken = nodeToken
     }
 
     static void setListaDtoTokenFornecida(List<DTOToken> listaDto) {
         listaDtoFornecida = listaDto
     }
 
-    NodeToken analisa(NodeToken anterior) {
-        nodeToken.anterior = anterior
+    NodeToken analisa() {
         while (listaDtoFornecida.size() > 0) {
-            DTOToken dtoTokenFornecida = listaDtoFornecida[0]
+            dtoTokenFornecida = listaDtoFornecida[0]
+            adicionaNodeSubArvore()
             adicionaTokenPilha(dtoTokenFornecida)
-            adicionaNodeSubArvore(dtoTokenFornecida)
             removePrimeiroElementoListaToken()
             validacaoSequenciaTokens()
             if (!validaProximaEtapa(dtoTokenFornecida)) {
-                if(validaExcessaoToken(dtoTokenFornecida))
+                if (validaExcessaoToken(dtoTokenFornecida))
                     break
             }
-            if(!listaDtoFornecida) {
+            if (!listaDtoFornecida) {
                 validaAbreFecha()
             }
         }
@@ -41,29 +51,34 @@ class RegraEstrutura {
 
     protected void validacaoSequenciaTokens() {}
 
-    protected void adicionaNodeSubArvore(DTOToken dtoToken){
-        nodeToken.addNode(dtoToken)
-    }
-
     protected Boolean validaExcessaoToken(DTOToken dtoToken) {
         return true
     }
 
-    private Boolean validaAbreFecha() {
-        if(pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_CHAVE.name() ||
-                pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_PARENTESES.name()){
+    protected void adicionaNodeSubArvore() {
+//        RegraEstrutura instancia = new RegraEstrutura(dtoTokenFornecida, this.chaveProximoPasso)
+        if (!nodeToken) {
+            nodeToken = new NodeToken(this)
+            return
+        }
+        nodeToken.addNode(this)
+    }
+
+    private static Boolean validaAbreFecha() {
+        if (pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_CHAVE.name() ||
+                pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_PARENTESES.name()) {
             return true
         }
         int paridadeAbreFechaChave = 0
         int paridadeAbreFechaParenteses = 0
-        for (DTOToken dto: pilhaDtoLida) {
+        for (DTOToken dto : pilhaDtoLida) {
             TokenPreDefinido token = TokenPreDefinido.obtemToken(dto.desc)
-            paridadeAbreFechaChave += token == TokenPreDefinido.ABRE_CHAVE? 1:
-                    token == TokenPreDefinido.FECHA_CHAVE? -1: 0
-            paridadeAbreFechaParenteses += token == TokenPreDefinido.ABRE_PARENTESES? 1:
-                    token == TokenPreDefinido.FECHA_PARENTESES? -1: 0
+            paridadeAbreFechaChave += token == TokenPreDefinido.ABRE_CHAVE ? 1 :
+                    token == TokenPreDefinido.FECHA_CHAVE ? -1 : 0
+            paridadeAbreFechaParenteses += token == TokenPreDefinido.ABRE_PARENTESES ? 1 :
+                    token == TokenPreDefinido.FECHA_PARENTESES ? -1 : 0
         }
-        if(paridadeAbreFechaParenteses != 0 || paridadeAbreFechaChave != 0) {
+        if (paridadeAbreFechaParenteses != 0 || paridadeAbreFechaChave != 0) {
             throw new Exception("ERROR PARENTES OU CHAVES FALTANDO")
         }
         return true
@@ -81,11 +96,11 @@ class RegraEstrutura {
         if (!proximaEtapa) {
             return true
         }
-        nodeToken.addSubArvore(proximaEtapa.analisa(nodeToken))
+        nodeToken.addNode(proximaEtapa.analisa())
         return true
     }
 
-    private void removePrimeiroElementoListaToken() {
+    private static void removePrimeiroElementoListaToken() {
         listaDtoFornecida = listaDtoFornecida.size() > 1 ? listaDtoFornecida.subList(1, listaDtoFornecida.size()) : []
     }
 
@@ -94,8 +109,29 @@ class RegraEstrutura {
         pilhaDtoLida.add(0, dtoToken)
     }
 
-    private void desfazProcessoAdicaoPilha() {
+    private static void desfazProcessoAdicaoPilha() {
         listaDtoFornecida.add(0, pilhaDtoLida[0])
         pilhaDtoLida.remove(0)
+    }
+
+    boolean equals(o) {
+        if (this.is(o)) return true
+        if (!(o instanceof RegraEstrutura)) return false
+
+        RegraEstrutura that = (RegraEstrutura) o
+
+        if (chaveProximoPasso != that.chaveProximoPasso) return false
+        if (dtoTokenFornecida != that.dtoTokenFornecida) return false
+        if (nodeToken != that.nodeToken) return false
+
+        return true
+    }
+
+    int hashCode() {
+        int result
+        result = dtoTokenFornecida.hashCode()
+        result = 31 * result + chaveProximoPasso.hashCode()
+        result = 31 * result + (nodeToken != null ? nodeToken.hashCode() : 0)
+        return result
     }
 }
