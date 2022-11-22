@@ -11,6 +11,6 @@ class CompileCool {
             println(token)
         }
         NodeToken arvoreGerada = AnaliseSintatica.analisaTokens(listaTokens)
-        AnaliseSemantica.analisaArvore(listaTokens)
+        AnaliseSemantica.analisaArvore(arvoreGerada)
     }
 }

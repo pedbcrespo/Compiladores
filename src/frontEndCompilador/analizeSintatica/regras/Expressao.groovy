@@ -41,8 +41,8 @@ class Expressao extends RegraEstrutura {
         super(geraListaToken())
     }
 
-    Expressao(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
-        super(dtoToken, dtoHashTokens)
+    Expressao(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
+        super(tokenPreDefinido, dtoHashTokens)
     }
 
     private List<List<TokenPreDefinido>> listaCasosErro = [
@@ -57,7 +57,7 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> null }),
                 new DTOHashToken(TokenPreDefinido.TEXTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ATRIBUICAO, { -> null }),
-                new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> null }),
                 new DTOHashToken(TokenPreDefinido.FECHA_PARENTESES, { -> null }),
                 new DTOHashToken(TokenPreDefinido.IF, { -> null }),
                 new DTOHashToken(TokenPreDefinido.THEN, { -> null }),
@@ -97,16 +97,6 @@ class Expressao extends RegraEstrutura {
             throw new Exception("ERRO TOKEN ${pilhaDtoLida[0]} INVALIDO")
         }
     }
-
-//    @Override
-//    protected void adicionaNodeSubArvore(){
-//        RegraEstrutura instancia = new Expressao(dtoTokenFornecida, this.chaveProximoPasso)
-//        if(!nodeToken) {
-//            nodeToken = new NodeToken(instancia)
-//            return
-//        }
-//        nodeToken.addNode(instancia)
-//    }
 
     private Boolean analizaSequencia(List<TokenPreDefinido> listaSequencia) {
         Boolean valido = true

@@ -30,8 +30,8 @@ class Classe extends RegraEstrutura {
         ])
     }
 
-    Classe(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
-        super(dtoToken, dtoHashTokens)
+    Classe(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
+        super(tokenPreDefinido, dtoHashTokens)
     }
 
     @Override
@@ -52,13 +52,8 @@ class Classe extends RegraEstrutura {
         }
     }
 
-//    @Override
-//    protected void adicionaNodeSubArvore(){
-//        RegraEstrutura instancia = new Classe(dtoTokenFornecida, chaveProximoPasso)
-//        if(!nodeToken) {
-//            nodeToken = new NodeToken(instancia)
-//            return
-//        }
-//        nodeToken.addNode(instancia)
-//    }
+    @Override
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        return TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.PONTO_VIRGULA
+    }
 }

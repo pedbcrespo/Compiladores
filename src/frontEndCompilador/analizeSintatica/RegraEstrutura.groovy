@@ -5,26 +5,31 @@ import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class RegraEstrutura {
+    private UUID uuid
     protected List<TokenPreDefinido> pilhaTokensLidosPorInstancia = []
     protected static List<DTOToken> listaDtoFornecida
     protected static List<DTOToken> pilhaDtoLida = []
     protected DTOToken dtoTokenFornecida
+    protected TokenPreDefinido tokenChamadaAnterior
     protected List<DTOHashToken> chaveProximoPasso
     protected NodeToken nodeToken
 
     RegraEstrutura(List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
         this.nodeToken = null
+        this.uuid = UUID.randomUUID()
     }
 
-    RegraEstrutura(DTOToken dtoTokenFornecida, List<DTOHashToken> chaveProximoPasso) {
-        this.dtoTokenFornecida = dtoTokenFornecida
+    RegraEstrutura(TokenPreDefinido tokenChamadaAnterior, List<DTOHashToken> chaveProximoPasso) {
+        this.tokenChamadaAnterior = tokenChamadaAnterior
         this.chaveProximoPasso = chaveProximoPasso
+        this.uuid = UUID.randomUUID()
     }
 
     RegraEstrutura(NodeToken nodeToken, List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
         this.nodeToken = nodeToken
+        this.uuid = UUID.randomUUID()
     }
 
     static void setListaDtoTokenFornecida(List<DTOToken> listaDto) {
@@ -38,6 +43,9 @@ class RegraEstrutura {
             adicionaTokenPilha(dtoTokenFornecida)
             removePrimeiroElementoListaToken()
             validacaoSequenciaTokens()
+            if(casoEspecifico(dtoTokenFornecida)){
+                break
+            }
             if (!validaProximaEtapa(dtoTokenFornecida)) {
                 if (validaExcessaoToken(dtoTokenFornecida))
                     break
@@ -55,8 +63,11 @@ class RegraEstrutura {
         return true
     }
 
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        return false
+    }
+
     protected void adicionaNodeSubArvore() {
-//        RegraEstrutura instancia = new RegraEstrutura(dtoTokenFornecida, this.chaveProximoPasso)
         if (!nodeToken) {
             nodeToken = new NodeToken(this)
             return
@@ -120,18 +131,12 @@ class RegraEstrutura {
 
         RegraEstrutura that = (RegraEstrutura) o
 
-        if (chaveProximoPasso != that.chaveProximoPasso) return false
-        if (dtoTokenFornecida != that.dtoTokenFornecida) return false
-        if (nodeToken != that.nodeToken) return false
+        if (uuid != that.uuid) return false
 
         return true
     }
 
     int hashCode() {
-        int result
-        result = dtoTokenFornecida.hashCode()
-        result = 31 * result + chaveProximoPasso.hashCode()
-        result = 31 * result + (nodeToken != null ? nodeToken.hashCode() : 0)
-        return result
+        return uuid.hashCode()
     }
 }

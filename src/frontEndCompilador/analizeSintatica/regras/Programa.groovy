@@ -14,21 +14,16 @@ class Programa extends RegraEstrutura {
         ])
     }
 
-    Programa(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
-        super(dtoToken, dtoHashTokens)
+    Programa(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
+        super(tokenPreDefinido, dtoHashTokens)
     }
 
     protected Boolean validaExcessaoToken(DTOToken dtoToken) {
         throw new Exception("ERRO TOKEN: ${pilhaDtoLida[0].simb}")
     }
 
-//    @Override
-//    protected void adicionaNodeSubArvore(){
-//        RegraEstrutura instancia = new Programa(dtoTokenFornecida, this.chaveProximoPasso)
-//        if(!nodeToken) {
-//            nodeToken = new NodeToken(instancia)
-//            return
-//        }
-//        nodeToken.addNode(instancia)
-//    }
+    @Override
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        return TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.PONTO_VIRGULA
+    }
 }

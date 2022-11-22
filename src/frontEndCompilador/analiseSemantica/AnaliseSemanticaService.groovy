@@ -1,5 +1,6 @@
 package frontEndCompilador.analiseSemantica
 
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.dto.DTOTipoDto
 import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.dto.Dto
@@ -19,15 +20,7 @@ class AnaliseSemanticaService {
     ]
     private static int nivelAtual
 
-    static List<BlocoToken> organizaBlocos(List<DTOToken> listaDto) {
-        nivelAtual = 0
-        for (DTOToken dto : listaDto) {
-            pilhaBloco.add(0, dto)
-            nivelAtual += obtemTokenPreDefinido(dto) == tokenContraChave ? 1 : 0
-            if (obtemTokenPreDefinido(dto) == tokenChave) {
-                fechaBloco()
-            }
-        }
+    static List<BlocoToken> organizaBlocos(NodeToken arvore) {
         return listaBlocos
     }
 
@@ -140,4 +133,6 @@ class AnaliseSemanticaService {
                 }
         ]
     }
+
+    static void analizaListaBlocos(List<BlocoToken> blocoTokens) {}
 }
