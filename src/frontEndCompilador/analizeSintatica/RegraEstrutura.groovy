@@ -1,6 +1,7 @@
 package frontEndCompilador.analizeSintatica
 
 import frontEndCompilador.dto.DTOHashToken
+import frontEndCompilador.dto.DTOParToken
 import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
@@ -10,21 +11,17 @@ class RegraEstrutura {
     protected static List<DTOToken> listaDtoFornecida
     protected static List<DTOToken> pilhaDtoLida = []
     protected DTOToken dtoTokenFornecida
-    protected TokenPreDefinido tokenChamadaAnterior
+    protected TokenPreDefinido tokenChavePar
     protected List<DTOHashToken> chaveProximoPasso
     protected NodeToken nodeToken
 
     RegraEstrutura(List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
         this.nodeToken = null
+        this.tokenChavePar = null
         this.uuid = UUID.randomUUID()
     }
 
-    RegraEstrutura(TokenPreDefinido tokenChamadaAnterior, List<DTOHashToken> chaveProximoPasso) {
-        this.tokenChamadaAnterior = tokenChamadaAnterior
-        this.chaveProximoPasso = chaveProximoPasso
-        this.uuid = UUID.randomUUID()
-    }
 
     RegraEstrutura(NodeToken nodeToken, List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
@@ -42,16 +39,12 @@ class RegraEstrutura {
             adicionaNodeSubArvore()
             adicionaTokenPilha(dtoTokenFornecida)
             removePrimeiroElementoListaToken()
-            validacaoSequenciaTokens()
-            if(casoEspecifico(dtoTokenFornecida)){
+            if (casoEspecifico(dtoTokenFornecida)) {
                 break
             }
             if (!validaProximaEtapa(dtoTokenFornecida)) {
                 if (validaExcessaoToken(dtoTokenFornecida))
                     break
-            }
-            if (!listaDtoFornecida) {
-                validaAbreFecha()
             }
         }
         return nodeToken
@@ -63,10 +56,6 @@ class RegraEstrutura {
         return true
     }
 
-    protected Boolean casoEspecifico(DTOToken dtoToken) {
-        return false
-    }
-
     protected void adicionaNodeSubArvore() {
         if (!nodeToken) {
             nodeToken = new NodeToken(this)
@@ -75,22 +64,31 @@ class RegraEstrutura {
         nodeToken.addNode(this)
     }
 
-    private static Boolean validaAbreFecha() {
-        if (pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_CHAVE.name() ||
-                pilhaDtoLida[0].desc == TokenPreDefinido.ABRE_PARENTESES.name()) {
-            return true
+    protected static void desfazProcessoAdicaoPilha() {
+        listaDtoFornecida.add(0, pilhaDtoLida[0])
+        pilhaDtoLida.remove(0)
+    }
+
+    protected TokenPreDefinido casoChavePar() {
+        TokenPreDefinido token = TokenPreDefinido.obtemToken(dtoTokenFornecida.desc)
+        return [
+                TokenPreDefinido.ABRE_PARENTESES,
+                TokenPreDefinido.ABRE_CHAVE
+        ].find{ it -> it == token}
+    }
+
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        List<DTOParToken> listaCasosEspecificos = [
+                new DTOParToken(TokenPreDefinido.ABRE_PARENTESES, TokenPreDefinido.FECHA_PARENTESES),
+                new DTOParToken(TokenPreDefinido.ABRE_CHAVE, TokenPreDefinido.FECHA_CHAVE)
+        ]
+        DTOParToken conjuntoTokenChave = listaCasosEspecificos.find { it ->
+            it.correspondeChaveFecha(TokenPreDefinido.obtemToken(dtoToken.desc))
         }
-        int paridadeAbreFechaChave = 0
-        int paridadeAbreFechaParenteses = 0
-        for (DTOToken dto : pilhaDtoLida) {
-            TokenPreDefinido token = TokenPreDefinido.obtemToken(dto.desc)
-            paridadeAbreFechaChave += token == TokenPreDefinido.ABRE_CHAVE ? 1 :
-                    token == TokenPreDefinido.FECHA_CHAVE ? -1 : 0
-            paridadeAbreFechaParenteses += token == TokenPreDefinido.ABRE_PARENTESES ? 1 :
-                    token == TokenPreDefinido.FECHA_PARENTESES ? -1 : 0
-        }
-        if (paridadeAbreFechaParenteses != 0 || paridadeAbreFechaChave != 0) {
-            throw new Exception("ERROR PARENTES OU CHAVES FALTANDO")
+        if (!conjuntoTokenChave || !tokenChavePar) {
+            return false
+        } else if (conjuntoTokenChave.obtemChaveFecha(tokenChavePar)) {
+            desfazProcessoAdicaoPilha()
         }
         return true
     }
@@ -107,6 +105,7 @@ class RegraEstrutura {
         if (!proximaEtapa) {
             return true
         }
+        proximaEtapa.tokenChavePar = casoChavePar()
         nodeToken.addNode(proximaEtapa.analisa())
         return true
     }
@@ -118,11 +117,6 @@ class RegraEstrutura {
     private void adicionaTokenPilha(DTOToken dtoToken) {
         pilhaTokensLidosPorInstancia += TokenPreDefinido.obtemToken(dtoToken.desc) ?: []
         pilhaDtoLida.add(0, dtoToken)
-    }
-
-    private static void desfazProcessoAdicaoPilha() {
-        listaDtoFornecida.add(0, pilhaDtoLida[0])
-        pilhaDtoLida.remove(0)
     }
 
     boolean equals(o) {

@@ -1,8 +1,9 @@
 package frontEndCompilador.analizeSintatica.regras
 
-import frontEndCompilador.analizeSintatica.NodeToken
+
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
+import frontEndCompilador.dto.DTOParToken
 import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
@@ -41,10 +42,6 @@ class Expressao extends RegraEstrutura {
         super(geraListaToken())
     }
 
-    Expressao(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
-        super(tokenPreDefinido, dtoHashTokens)
-    }
-
     private List<List<TokenPreDefinido>> listaCasosErro = [
             [TokenPreDefinido.ATRIBUICAO, TokenPreDefinido.PONTO_VIRGULA],
             [TokenPreDefinido.ATRIBUICAO, TokenPreDefinido.VIRGULA],
@@ -57,7 +54,7 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.IDENTIFICADOR, { -> null }),
                 new DTOHashToken(TokenPreDefinido.TEXTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ATRIBUICAO, { -> null }),
-                new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> null }),
+                new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FECHA_PARENTESES, { -> null }),
                 new DTOHashToken(TokenPreDefinido.IF, { -> null }),
                 new DTOHashToken(TokenPreDefinido.THEN, { -> null }),
@@ -77,11 +74,20 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.SUBTRACAO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ASTERISTICO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.DIVISAO, { -> null }),
+                new DTOHashToken(TokenPreDefinido.MAIOR, { -> null }),
+                new DTOHashToken(TokenPreDefinido.MAIOR_IGUAL, { -> null }),
+                new DTOHashToken(TokenPreDefinido.MENOR, { -> null }),
+                new DTOHashToken(TokenPreDefinido.MENOR_IGUAL, { -> null }),
+                new DTOHashToken(TokenPreDefinido.IGUAL, { -> null }),
                 new DTOHashToken(TokenPreDefinido.NOT, { -> null }),
                 new DTOHashToken(TokenPreDefinido.TRUE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.FALSE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.VIRGULA, { -> null }),
+                new DTOHashToken(TokenPreDefinido.PONTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.PONTO_VIRGULA, { -> null }),
+                new DTOHashToken(TokenPreDefinido.ABRE_CHAVE, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.FECHA_CHAVE, { -> null }),
+
         ]
     }
 
@@ -96,6 +102,23 @@ class Expressao extends RegraEstrutura {
         if (!houveMatchTokes) {
             throw new Exception("ERRO TOKEN ${pilhaDtoLida[0]} INVALIDO")
         }
+    }
+
+    @Override
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        List<DTOParToken> listaCasosEspecificos = [
+                new DTOParToken(TokenPreDefinido.ABRE_PARENTESES, TokenPreDefinido.FECHA_PARENTESES),
+                new DTOParToken(TokenPreDefinido.ABRE_CHAVE, TokenPreDefinido.FECHA_CHAVE)
+        ]
+        DTOParToken conjuntoTokenChave = listaCasosEspecificos.find { it ->
+            it.correspondeChaveFecha(TokenPreDefinido.obtemToken(dtoToken.desc))
+        }
+        if (!conjuntoTokenChave || !tokenChavePar || casoEspecificoExpressao()) {
+            return false
+        } else if (conjuntoTokenChave.obtemChaveFecha(tokenChavePar)) {
+            desfazProcessoAdicaoPilha()
+        }
+        return true
     }
 
     private Boolean analizaSequencia(List<TokenPreDefinido> listaSequencia) {
@@ -129,4 +152,15 @@ class Expressao extends RegraEstrutura {
         }
         return true
     }
+
+    private boolean casoEspecificoExpressao() {
+        DTOToken dtoSegundoDaPilha = pilhaDtoLida[1]
+        TokenPreDefinido tokenSegundoDaPilha = TokenPreDefinido.obtemToken(dtoSegundoDaPilha.desc)
+        TokenPreDefinido tokenDtoAtual = TokenPreDefinido.obtemToken(dtoTokenFornecida.desc)
+        return (tokenSegundoDaPilha == TokenPreDefinido.FECHA_CHAVE &&
+                tokenDtoAtual == TokenPreDefinido.PONTO_VIRGULA) ||
+                (tokenDtoAtual == TokenPreDefinido.FECHA_PARENTESES &&
+                        tokenChavePar == TokenPreDefinido.ABRE_CHAVE)
+    }
+
 }

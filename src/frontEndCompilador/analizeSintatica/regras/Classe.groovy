@@ -30,10 +30,6 @@ class Classe extends RegraEstrutura {
         ])
     }
 
-    Classe(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
-        super(tokenPreDefinido, dtoHashTokens)
-    }
-
     @Override
     protected void validacaoSequenciaTokens() {
         Boolean sequenciaValida = true
@@ -52,8 +48,8 @@ class Classe extends RegraEstrutura {
         }
     }
 
-    @Override
-    protected Boolean casoEspecifico(DTOToken dtoToken) {
-        return TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.PONTO_VIRGULA
-    }
+//    @Override
+//    protected Boolean casoEspecifico(DTOToken dtoToken) {
+//        return TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.PONTO_VIRGULA
+//    }
 }

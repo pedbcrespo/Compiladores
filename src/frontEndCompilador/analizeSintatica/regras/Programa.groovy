@@ -14,9 +14,6 @@ class Programa extends RegraEstrutura {
         ])
     }
 
-    Programa(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
-        super(tokenPreDefinido, dtoHashTokens)
-    }
 
     protected Boolean validaExcessaoToken(DTOToken dtoToken) {
         throw new Exception("ERRO TOKEN: ${pilhaDtoLida[0].simb}")

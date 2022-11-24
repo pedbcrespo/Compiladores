@@ -40,10 +40,6 @@ class RFeature extends RegraEstrutura {
         ])
     }
 
-    RFeature(TokenPreDefinido tokenPreDefinido, List<DTOHashToken> dtoHashTokens) {
-        super(tokenPreDefinido, dtoHashTokens)
-    }
-
     @Override
     protected void validacaoSequenciaTokens() {
         if (pilhaTokensLidosPorInstancia.size() < 2) {
