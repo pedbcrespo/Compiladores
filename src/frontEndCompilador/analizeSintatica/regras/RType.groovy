@@ -17,8 +17,12 @@ class RType extends RegraEstrutura {
         ])
     }
 
-    RType(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
-        super(dtoToken, dtoHashTokens)
+    @Override
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        if(TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.IDENTIFICADOR) {
+            return true
+        }
+        return false
     }
 
     protected void validacaoSequenciaTokens() {

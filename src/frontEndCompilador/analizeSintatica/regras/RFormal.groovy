@@ -1,6 +1,6 @@
 package frontEndCompilador.analizeSintatica.regras
 
-import frontEndCompilador.analizeSintatica.NodeToken
+
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.dto.DTOToken
@@ -19,8 +19,13 @@ class RFormal extends RegraEstrutura {
         ])
     }
 
-    RFormal(DTOToken dtoToken, List<DTOHashToken> dtoHashTokens) {
-        super(dtoToken, dtoHashTokens)
+    @Override
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        if(TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.ABRE_CHAVE) {
+            desfazProcessoAdicaoPilha()
+            return true
+        }
+        return false
     }
 
     @Override
