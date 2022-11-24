@@ -50,8 +50,6 @@ class RegraEstrutura {
         return nodeToken
     }
 
-    protected void validacaoSequenciaTokens() {}
-
     protected Boolean validaExcessaoToken(DTOToken dtoToken) {
         return true
     }
