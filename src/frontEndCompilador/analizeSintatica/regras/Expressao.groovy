@@ -1,6 +1,6 @@
 package frontEndCompilador.analizeSintatica.regras
 
-
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.dto.DTOParToken
@@ -91,7 +91,7 @@ class Expressao extends RegraEstrutura {
         ]
     }
 
-    protected void validacaoSequenciaTokens() {
+    protected void validacaoSequenciaTokens(NodeToken nodeProximaEtapa) {
         Boolean houveMatchTokes = false
         for (List<TokenPreDefinido> listaSequencia : sequenciasAceitas) {
             if (analizaSequencia(listaSequencia)) {
@@ -116,6 +116,7 @@ class Expressao extends RegraEstrutura {
         if (!conjuntoTokenChave || !tokenChavePar || casoEspecificoExpressao()) {
             return false
         } else if (conjuntoTokenChave.obtemChaveFecha(tokenChavePar)) {
+            nodeToken.dtosDaMesmaRegra.removeLast()
             desfazProcessoAdicaoPilha()
         }
         return true

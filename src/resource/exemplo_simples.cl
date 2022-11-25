@@ -1,6 +1,6 @@
-class Main inherits IO {
+class Main {
+    x : Int;
     main(): Object {
-        let x: Integer <- 2+2,
-        out_string(x)
+        x <- 2;
     };
 };

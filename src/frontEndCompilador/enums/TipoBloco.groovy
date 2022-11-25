@@ -1,21 +1,29 @@
 package frontEndCompilador.enums
 
+import frontEndCompilador.dto.DTOToken
+
 enum TipoBloco {
-    OPERACAO_ARIT('operacao aritmedica', [TokenPreDefinido.SOMA, TokenPreDefinido.SUBTRACAO, TokenPreDefinido.ASTERISTICO, TokenPreDefinido.DIVISAO]),
-    OPERACAO_BOOL('operacao booleana', [TokenPreDefinido.MAIOR, TokenPreDefinido.MAIOR_IGUAL, TokenPreDefinido.MENOR, TokenPreDefinido.MAIOR_IGUAL]),
-    ATRIBUICAO('atribuicao', [TokenPreDefinido.DOIS_PONTOS])
+    INT('Int'),
+    BOOLEAN('Bool'),
+    STRING('String'),
+    OBJECT('Object'),
+    USER_OBJECT('')
 
     String desc
-    List<TokenPreDefinido> listaTokensAceitos
 
-    TipoBloco(String desc, List<TokenPreDefinido> listaTokensAceitos) {
+    TipoBloco(String desc) {
         this.desc = desc
-        this.listaTokensAceitos = listaTokensAceitos
     }
 
-    static TipoBloco determinaTipo(String desc) {
-        return values().find { TipoBloco tipo ->
-            tipo.listaTokensAceitos.contains(TokenPreDefinido.obtemToken(desc))
-        }
+    static TipoBloco obtemTipo(DTOToken dtoToken) {
+        String simb = dtoToken.simb
+        TipoBloco tipoEncontrado = values().find { it -> it.desc == simb }
+        return tipoEncontrado ?: tipoPersonalizado(simb)
+    }
+
+    private static TipoBloco tipoPersonalizado(String simb) {
+        TipoBloco tipo = USER_OBJECT
+        tipo.desc = simb
+        return tipo
     }
 }

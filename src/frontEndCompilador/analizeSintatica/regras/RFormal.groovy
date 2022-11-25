@@ -1,6 +1,6 @@
 package frontEndCompilador.analizeSintatica.regras
 
-
+import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.dto.DTOToken
@@ -21,15 +21,17 @@ class RFormal extends RegraEstrutura {
 
     @Override
     protected Boolean casoEspecifico(DTOToken dtoToken) {
-        if(TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.ABRE_CHAVE) {
+        List<TokenPreDefinido> listaToken = [TokenPreDefinido.ABRE_CHAVE, TokenPreDefinido.FECHA_PARENTESES]
+        if(TokenPreDefinido.obtemToken(dtoToken.desc) in listaToken) {
             desfazProcessoAdicaoPilha()
+            dtoTokenFornecida = null
             return true
         }
         return false
     }
 
     @Override
-    protected void validacaoSequenciaTokens() {
+    protected void validacaoSequenciaTokens(NodeToken nodeProximaEtapa) {
         int contSequenciaTokens = 0
         for (int pos = 0; pos < pilhaTokensLidosPorInstancia.size(); pos++) {
             contSequenciaTokens += pilhaTokensLidosPorInstancia[pos] == sequenciaAceita[pos] ? 1 : 0

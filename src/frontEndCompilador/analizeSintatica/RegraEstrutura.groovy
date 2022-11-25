@@ -1,5 +1,6 @@
 package frontEndCompilador.analizeSintatica
 
+import frontEndCompilador.analizeSintatica.regras.RType
 import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.dto.DTOParToken
 import frontEndCompilador.dto.DTOToken
@@ -104,9 +105,13 @@ class RegraEstrutura {
             return true
         }
         proximaEtapa.tokenChavePar = casoChavePar()
-        nodeToken.addNode(proximaEtapa.analisa())
+        NodeToken nodeProximaEtapa = proximaEtapa.analisa()
+//        validacaoSequenciaTokens(nodeProximaEtapa)
+        nodeToken.addNode(nodeProximaEtapa)
         return true
     }
+
+    protected void validacaoSequenciaTokens(NodeToken nodeProximaEtapa) {}
 
     private static void removePrimeiroElementoListaToken() {
         listaDtoFornecida = listaDtoFornecida.size() > 1 ? listaDtoFornecida.subList(1, listaDtoFornecida.size()) : []

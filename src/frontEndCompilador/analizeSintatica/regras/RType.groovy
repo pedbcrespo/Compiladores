@@ -25,7 +25,7 @@ class RType extends RegraEstrutura {
         return false
     }
 
-    protected void validacaoSequenciaTokens() {
+    protected void validacaoSequenciaTokens(NodeToken nodeProximaEtapa) {
         List<TokenPreDefinido> listaTokensChaves = [
                 TokenPreDefinido.IDENTIFICADOR,
                 TokenPreDefinido.SELF,

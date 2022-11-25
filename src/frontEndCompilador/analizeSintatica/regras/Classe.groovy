@@ -31,7 +31,7 @@ class Classe extends RegraEstrutura {
     }
 
     @Override
-    protected void validacaoSequenciaTokens() {
+    protected void validacaoSequenciaTokens(NodeToken nodeProximaEtapa) {
         Boolean sequenciaValida = true
         for (int pos = 0; pos < pilhaTokensLidosPorInstancia.size(); pos++) {
             if (pos < sequenciaAceita1.size()) {
@@ -48,8 +48,8 @@ class Classe extends RegraEstrutura {
         }
     }
 
-//    @Override
-//    protected Boolean casoEspecifico(DTOToken dtoToken) {
-//        return TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.PONTO_VIRGULA
-//    }
+    @Override
+    protected Boolean casoEspecifico(DTOToken dtoToken) {
+        return TokenPreDefinido.obtemToken(dtoToken.desc) == TokenPreDefinido.PONTO_VIRGULA
+    }
 }
