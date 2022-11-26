@@ -56,9 +56,9 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.ATRIBUICAO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ABRE_PARENTESES, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FECHA_PARENTESES, { -> null }),
-                new DTOHashToken(TokenPreDefinido.IF, { -> null }),
-                new DTOHashToken(TokenPreDefinido.THEN, { -> null }),
-                new DTOHashToken(TokenPreDefinido.ELSE, { -> null }),
+                new DTOHashToken(TokenPreDefinido.IF, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.THEN, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.ELSE, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FI, { -> null }),
                 new DTOHashToken(TokenPreDefinido.WHILE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.LOOP, { -> null }),
@@ -106,6 +106,11 @@ class Expressao extends RegraEstrutura {
 
     @Override
     protected Boolean casoEspecifico(DTOToken dtoToken) {
+        if(casoEspecificoIf()) {
+            desfazProcessoAdicaoPilha()
+            nodeToken.dtosDaMesmaRegra.removeLast()
+            return true
+        }
         List<DTOParToken> listaCasosEspecificos = [
                 new DTOParToken(TokenPreDefinido.ABRE_PARENTESES, TokenPreDefinido.FECHA_PARENTESES),
                 new DTOParToken(TokenPreDefinido.ABRE_CHAVE, TokenPreDefinido.FECHA_CHAVE)
@@ -113,13 +118,25 @@ class Expressao extends RegraEstrutura {
         DTOParToken conjuntoTokenChave = listaCasosEspecificos.find { it ->
             it.correspondeChaveFecha(TokenPreDefinido.obtemToken(dtoToken.desc))
         }
-        if (!conjuntoTokenChave || !tokenChavePar || casoEspecificoExpressao()) {
+        if ((!conjuntoTokenChave || !tokenChave) || casoEspecificoExpressao()) {
             return false
-        } else if (conjuntoTokenChave.obtemChaveFecha(tokenChavePar)) {
+        } else if (conjuntoTokenChave.obtemChaveFecha(tokenChave)) {
             nodeToken.dtosDaMesmaRegra.removeLast()
             desfazProcessoAdicaoPilha()
         }
         return true
+    }
+
+    @Override
+    protected TokenPreDefinido casoChavePar() {
+        TokenPreDefinido token = TokenPreDefinido.obtemToken(dtoTokenFornecida.desc)
+        return [
+                TokenPreDefinido.ABRE_PARENTESES,
+                TokenPreDefinido.ABRE_CHAVE,
+                TokenPreDefinido.IF,
+                TokenPreDefinido.THEN,
+                TokenPreDefinido.ELSE,
+        ].find{ it -> it == token}
     }
 
     private Boolean analizaSequencia(List<TokenPreDefinido> listaSequencia) {
@@ -161,7 +178,15 @@ class Expressao extends RegraEstrutura {
         return (tokenSegundoDaPilha == TokenPreDefinido.FECHA_CHAVE &&
                 tokenDtoAtual == TokenPreDefinido.PONTO_VIRGULA) ||
                 (tokenDtoAtual == TokenPreDefinido.FECHA_PARENTESES &&
-                        tokenChavePar == TokenPreDefinido.ABRE_CHAVE)
+                        tokenChave == TokenPreDefinido.ABRE_CHAVE)
     }
 
+    private boolean casoEspecificoIf() {
+        return (tokenChave == TokenPreDefinido.IF &&
+                TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.THEN) ||
+                (tokenChave == TokenPreDefinido.THEN &&
+                        TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.ELSE) ||
+                (tokenChave == TokenPreDefinido.ELSE &&
+                        TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.FI)
+    }
 }

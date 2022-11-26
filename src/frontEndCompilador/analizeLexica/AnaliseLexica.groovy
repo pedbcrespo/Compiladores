@@ -90,6 +90,9 @@ class AnaliseLexica {
         if (sequenciaLetra) {
             TokenPreDefinido token = TokenPreDefinido.obtemToken(sequencia)
             token = !token? TokenPreDefinido.tokenPersonalisado(sequencia, TokenPreDefinido.IDENTIFICADOR):token
+            if(sequencia.length() == 3 && sequencia.contains('fi') && sequencia[sequencia.length()-1] == '\n') {
+                token = TokenPreDefinido.FI
+            }
             listaTokens += new DTOToken(token)
         } else {
             List<DTOToken> listaDtoToken = analizaStringRetornaDTOToken(sequencia)

@@ -11,6 +11,8 @@ class DTOTipoToken {
         this.tipoOperacao = tipoBloco
     }
 
+
+
     boolean equals(o) {
         if (this.is(o)) return true
         if (!(o instanceof DTOTipoToken)) return false
@@ -28,5 +30,10 @@ class DTOTipoToken {
         result = dtoToken.hashCode()
         result = 31 * result + tipoOperacao.hashCode()
         return result
+    }
+
+    @Override
+    public String toString() {
+        return "${dtoToken.simb} : ${tipoOperacao.name()}"
     }
 }

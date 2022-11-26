@@ -1,25 +1,26 @@
 package frontEndCompilador.analizeSintatica
 
-import frontEndCompilador.analizeSintatica.regras.RType
+
 import frontEndCompilador.dto.DTOHashToken
 import frontEndCompilador.dto.DTOParToken
 import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TokenPreDefinido
 
 class RegraEstrutura {
-    private UUID uuid
+    DTOToken dtoCabeca
+    protected DTOToken dtoTokenFornecida
+    protected NodeToken nodeToken
+    protected TokenPreDefinido tokenChave
     protected List<TokenPreDefinido> pilhaTokensLidosPorInstancia = []
+    protected List<DTOHashToken> chaveProximoPasso
     protected static List<DTOToken> listaDtoFornecida
     protected static List<DTOToken> pilhaDtoLida = []
-    protected DTOToken dtoTokenFornecida
-    protected TokenPreDefinido tokenChavePar
-    protected List<DTOHashToken> chaveProximoPasso
-    protected NodeToken nodeToken
+    private final UUID uuid
 
     RegraEstrutura(List<DTOHashToken> chaveProximoPasso) {
         this.chaveProximoPasso = chaveProximoPasso
         this.nodeToken = null
-        this.tokenChavePar = null
+        this.tokenChave = null
         this.uuid = UUID.randomUUID()
     }
 
@@ -84,9 +85,9 @@ class RegraEstrutura {
         DTOParToken conjuntoTokenChave = listaCasosEspecificos.find { it ->
             it.correspondeChaveFecha(TokenPreDefinido.obtemToken(dtoToken.desc))
         }
-        if (!conjuntoTokenChave || !tokenChavePar) {
+        if (!conjuntoTokenChave || !tokenChave) {
             return false
-        } else if (conjuntoTokenChave.obtemChaveFecha(tokenChavePar)) {
+        } else if (conjuntoTokenChave.obtemChaveFecha(tokenChave)) {
             desfazProcessoAdicaoPilha()
         }
         return true
@@ -104,7 +105,8 @@ class RegraEstrutura {
         if (!proximaEtapa) {
             return true
         }
-        proximaEtapa.tokenChavePar = casoChavePar()
+        proximaEtapa.tokenChave = casoChavePar()
+        proximaEtapa.dtoCabeca = casoDtoCabeca()
         NodeToken nodeProximaEtapa = proximaEtapa.analisa()
 //        validacaoSequenciaTokens(nodeProximaEtapa)
         nodeToken.addNode(nodeProximaEtapa)
@@ -135,5 +137,29 @@ class RegraEstrutura {
 
     int hashCode() {
         return uuid.hashCode()
+    }
+
+    private DTOToken casoDtoCabeca() {
+        TokenPreDefinido token = TokenPreDefinido.obtemToken(dtoTokenFornecida.desc)
+        if(token == TokenPreDefinido.IDENTIFICADOR){
+            return dtoTokenFornecida
+        }
+        List<TokenPreDefinido> listaTokensParaSerCabeca = [
+                TokenPreDefinido.IDENTIFICADOR,
+                TokenPreDefinido.IF,
+                TokenPreDefinido.ELSE,
+                TokenPreDefinido.THEN,
+                TokenPreDefinido.CLASS,
+                TokenPreDefinido.WHILE,
+                TokenPreDefinido.LOOP,
+                TokenPreDefinido.CASE
+        ]
+        for(DTOToken dto : pilhaDtoLida) {
+            token = TokenPreDefinido.obtemToken(dto.desc)
+            if(token in listaTokensParaSerCabeca) {
+                return dto
+            }
+        }
+        return null
     }
 }

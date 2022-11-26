@@ -15,7 +15,6 @@ enum TokenPreDefinido {
     DOIS_PONTOS(':'),
     PONTO_VIRGULA(';'),
     PONTO('.'),
-    IGUALDADE('='),
     COMENTARIO_LINHA('--'),
     ABRE_COMENTARIO_BLOCO('(*'),
     FECHA_COMENTARIO_BLOCO('*)'),
