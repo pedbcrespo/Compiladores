@@ -103,37 +103,15 @@ class AnaliseSemanticaService {
     }
 
     private static boolean analizaSequencia(List<DTOToken> lista) {
-        int pos = 0, inicial = 0, finalLista = lista.size()-1
         boolean validade = true
+        List<TipoBloco> buffer = []
         for (DTOToken dto : lista) {
-            if(dto in tiposTokenOperacoes*.dtoToken) {
-                TipoBloco tipoOperacao = tiposTokenOperacoes.find{it->it.dtoToken == dto}?.tipoOperacao
-                TipoBloco tipoSeq1 = analizaSequencia(lista[inicial..pos-1])
-                TipoBloco tipoSeq2 = analizaSequencia(lista[pos+1..finalLista])
-                inicial = pos+1
-                validade = sequenciaValidadeCorresponde(tipoSeq1, tipoSeq2, tipoOperacao)
+            if (TokenPreDefinido.obtemToken(dto.desc) == TokenPreDefinido.ATRIBUICAO) {
+                continue
             }
-            pos += 1
+            buffer.add(analizaToken(dto))
         }
-    }
-
-    private static TipoBloco analisaTipoSequencia(List<DTOToken> lista) {
-        List<DTOTipoToken> tipoTokenSequencia = []
-        for (DTOToken dto : lista) {
-            tipoTokenSequencia.add(new DTOTipoToken(dto, analizaToken(dto)))
-        }
-        boolean mesmoTipo = true
-        DTOTipoToken anterior = null
-        for (DTOTipoToken dto : tipoTokenSequencia) {
-            if (anterior) {
-                mesmoTipo = mesmoTipo && dto.tipoOperacao == anterior.tipoOperacao
-            }
-            anterior = dto
-        }
-        if (!mesmoTipo) {
-            throw new Exception('ERRO ORDEM TIPOS INVALIDOS')
-        }
-        return tipoTokenSequencia[0].tipoOperacao
+        return analizaSequenciaTipos(buffer, lista)
     }
 
     private static boolean verificaStack(NodeToken node, DTOToken dtoToken) {
@@ -148,6 +126,37 @@ class AnaliseSemanticaService {
     }
 
     private static boolean sequenciaValidadeCorresponde(TipoBloco tipoBloco1, TipoBloco tipoBloco2, TipoBloco tipoBloco3) {
+
+    }
+
+    private static void analisaAtribuicao(DTOToken dtoToken1, DTOToken dtoToken2) {
+        TipoBloco tipoDtoAntesAtrib = analizaToken(dtoToken1)
+        TipoBloco tipoDTODepoisAtrib = analizaToken(dtoToken2)
+        if (!(tipoDtoAntesAtrib == tipoDTODepoisAtrib)) {
+            throw new Exception("ATRIBUICAO INVALIDA: ${dtoToken1.simb} <- ${dtoToken2.simb}")
+        }
+    }
+
+    private static boolean analizaSequenciaTipos(List<TipoBloco> tipoBlocos, List<DTOToken> dtoTokens) {
+        boolean mesmoTipoAnterior = true
+        TipoBloco anterior = tipoBlocos[0]
+        for (TipoBloco tipo : tipoBlocos) {
+            mesmoTipoAnterior = mesmoTipoAnterior && tipo == anterior
+        }
+        if (mesmoTipoAnterior) {
+            return true
+        }
+        List<DTOToken> buffer = []
+        Map<Integer, DTOToken> mapPosicaoDto = [:]
+        int pos = 0
+        for (DTOToken dto : dtoTokens) {
+            if (dto in tiposTokenOperacoes*.dtoToken) {
+                mapPosicaoDto.put(pos, dto)
+            } else {
+                buffer.add(dto)
+            }   
+            pos += 1
+        }
 
     }
 }
