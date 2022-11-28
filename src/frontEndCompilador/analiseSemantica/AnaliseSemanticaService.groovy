@@ -3,6 +3,7 @@ package frontEndCompilador.analiseSemantica
 import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.regras.Expressao
 import frontEndCompilador.analizeSintatica.regras.RType
+import frontEndCompilador.dto.DTOTipoCorresp
 import frontEndCompilador.dto.DTOTipoToken
 import frontEndCompilador.dto.DTOToken
 import frontEndCompilador.enums.TipoBloco
@@ -21,6 +22,17 @@ class AnaliseSemanticaService {
             new DTOTipoToken(new DTOToken(TokenPreDefinido.DIVISAO), TipoBloco.INT),
             new DTOTipoToken(new DTOToken(TokenPreDefinido.SUBTRACAO), TipoBloco.INT),
             new DTOTipoToken(new DTOToken(TokenPreDefinido.SOMA), TipoBloco.INT)
+    ]
+
+    private static final List<DTOTipoCorresp> valorCorrespOperacao = [
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.MAIOR), TipoBloco.BOOLEAN), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.MAIOR_IGUAL), TipoBloco.BOOLEAN), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.MENOR), TipoBloco.BOOLEAN), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.MENOR_IGUAL), TipoBloco.BOOLEAN), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.SOMA), TipoBloco.INT), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.SUBTRACAO), TipoBloco.INT), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.ASTERISTICO), TipoBloco.INT), TipoBloco.INT),
+            new DTOTipoCorresp(new DTOTipoToken(new DTOToken(TokenPreDefinido.DIVISAO), TipoBloco.INT), TipoBloco.INT),
     ]
 
     static void analizaTiposNaArvore(NodeToken nodeToken) {
@@ -90,6 +102,21 @@ class AnaliseSemanticaService {
         return tipo
     }
 
+    private static boolean analizaSequencia(List<DTOToken> lista) {
+        int pos = 0, inicial = 0, finalLista = lista.size()-1
+        boolean validade = true
+        for (DTOToken dto : lista) {
+            if(dto in tiposTokenOperacoes*.dtoToken) {
+                TipoBloco tipoOperacao = tiposTokenOperacoes.find{it->it.dtoToken == dto}?.tipoOperacao
+                TipoBloco tipoSeq1 = analizaSequencia(lista[inicial..pos-1])
+                TipoBloco tipoSeq2 = analizaSequencia(lista[pos+1..finalLista])
+                inicial = pos+1
+                validade = sequenciaValidadeCorresponde(tipoSeq1, tipoSeq2, tipoOperacao)
+            }
+            pos += 1
+        }
+    }
+
     private static TipoBloco analisaTipoSequencia(List<DTOToken> lista) {
         List<DTOTipoToken> tipoTokenSequencia = []
         for (DTOToken dto : lista) {
@@ -107,5 +134,20 @@ class AnaliseSemanticaService {
             throw new Exception('ERRO ORDEM TIPOS INVALIDOS')
         }
         return tipoTokenSequencia[0].tipoOperacao
+    }
+
+    private static boolean verificaStack(NodeToken node, DTOToken dtoToken) {
+        if (node.regraNode.dtoCabeca == dtoToken) {
+            return true
+        }
+        boolean validade = false
+        for (NodeToken prox : node.proximosNodes) {
+            validade = validade || verificaStack(prox, dtoToken)
+        }
+        return validade
+    }
+
+    private static boolean sequenciaValidadeCorresponde(TipoBloco tipoBloco1, TipoBloco tipoBloco2, TipoBloco tipoBloco3) {
+
     }
 }
