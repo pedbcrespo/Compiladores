@@ -21,7 +21,8 @@ class AnaliseSemanticaService {
             new DTOTipoToken(new DTOToken(TokenPreDefinido.ASTERISTICO), TipoBloco.INT),
             new DTOTipoToken(new DTOToken(TokenPreDefinido.DIVISAO), TipoBloco.INT),
             new DTOTipoToken(new DTOToken(TokenPreDefinido.SUBTRACAO), TipoBloco.INT),
-            new DTOTipoToken(new DTOToken(TokenPreDefinido.SOMA), TipoBloco.INT)
+            new DTOTipoToken(new DTOToken(TokenPreDefinido.SOMA), TipoBloco.INT),
+            new DTOTipoToken(new DTOToken(TokenPreDefinido.ATRIBUICAO), TipoBloco.OBJECT),
     ]
 
     private static final List<DTOTipoCorresp> valorCorrespOperacao = [
@@ -103,15 +104,27 @@ class AnaliseSemanticaService {
     }
 
     private static boolean analizaSequencia(List<DTOToken> lista) {
-        boolean validade = true
-        List<TipoBloco> buffer = []
-        for (DTOToken dto : lista) {
-            if (TokenPreDefinido.obtemToken(dto.desc) == TokenPreDefinido.ATRIBUICAO) {
-                continue
+        int qtdTokenOperacao = 0
+        int pos, inicial = 0
+        int posPrimeiraTokenOperacao = 0
+        List<List<DTOToken>> listaListasDtos = []
+        while (true) {
+            for (pos = 0; pos < lista.size(); pos++) {
+                DTOToken dto = lista[pos]
+                qtdTokenOperacao += dto in tiposTokenOperacoes*.dtoToken ? 1 : 0
+                posPrimeiraTokenOperacao = qtdTokenOperacao == 1 ? pos: posPrimeiraTokenOperacao
+                if (qtdTokenOperacao > 1 || pos == lista.size()-1) {
+                    listaListasDtos.add(lista[inicial..pos-1])
+                    break
+                }
             }
-            buffer.add(analizaToken(dto))
+            if(pos == lista.size()-1){
+                break
+            }
+            lista = lista[posPrimeiraTokenOperacao+1..lista.size()-1]
         }
-        return
+        listaListasDtos.findResults{it -> analisaOperacao(it)}
+        return true
     }
 
     private static boolean verificaStack(NodeToken node, DTOToken dtoToken) {
@@ -125,29 +138,21 @@ class AnaliseSemanticaService {
         return validade
     }
 
-    private static void analisaAtribuicao(DTOToken dtoToken1, DTOToken dtoToken2) {
-        TipoBloco tipoDtoAntesAtrib = analizaToken(dtoToken1)
-        TipoBloco tipoDTODepoisAtrib = analizaToken(dtoToken2)
-        if (!(tipoDtoAntesAtrib == tipoDTODepoisAtrib)) {
-            throw new Exception("ATRIBUICAO INVALIDA: ${dtoToken1.simb} <- ${dtoToken2.simb}")
-        }
-    }
-
     private static void analisaOperacao(List<DTOToken> lista) {
         List<DTOToken> buffer = lista
         DTOTipoCorresp tipoOperacao = null
-        for(DTOToken dto : buffer) {
-            tipoOperacao = valorCorrespOperacao.find{it ->
-                it.dtoTipo.dtoToken == dto}
-            if(tipoOperacao) {
+        for (DTOToken dto : buffer) {
+            tipoOperacao = valorCorrespOperacao.find { it ->
+                it.dtoTipo.dtoToken == dto
+            }
+            if (tipoOperacao) {
                 buffer.remove(dto)
                 break
             }
         }
-        Set<TipoBloco> listaTipos = (Set<TipoBloco>) buffer.collect{it -> analizaToken(it)}.toSet()
-        if(listaTipos.size() > 1 || listaTipos[0] != tipoOperacao.tipoEsperado) {
+        Set<TipoBloco> listaTipos = (Set<TipoBloco>) buffer.collect { it -> analizaToken(it) }.toSet()
+        if (listaTipos.size() > 1 || listaTipos[0] != tipoOperacao.tipoEsperado) {
             throw new Exception("ERRO UTILIZACAO DE TIPO NA OPERACAO ${tipoOperacao.dtoTipo.dtoToken.simb}")
         }
-
     }
 }
