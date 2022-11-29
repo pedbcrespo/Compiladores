@@ -111,7 +111,7 @@ class AnaliseSemanticaService {
             }
             buffer.add(analizaToken(dto))
         }
-        return analizaSequenciaTipos(buffer, lista)
+        return
     }
 
     private static boolean verificaStack(NodeToken node, DTOToken dtoToken) {
@@ -125,10 +125,6 @@ class AnaliseSemanticaService {
         return validade
     }
 
-    private static boolean sequenciaValidadeCorresponde(TipoBloco tipoBloco1, TipoBloco tipoBloco2, TipoBloco tipoBloco3) {
-
-    }
-
     private static void analisaAtribuicao(DTOToken dtoToken1, DTOToken dtoToken2) {
         TipoBloco tipoDtoAntesAtrib = analizaToken(dtoToken1)
         TipoBloco tipoDTODepoisAtrib = analizaToken(dtoToken2)
@@ -137,25 +133,20 @@ class AnaliseSemanticaService {
         }
     }
 
-    private static boolean analizaSequenciaTipos(List<TipoBloco> tipoBlocos, List<DTOToken> dtoTokens) {
-        boolean mesmoTipoAnterior = true
-        TipoBloco anterior = tipoBlocos[0]
-        for (TipoBloco tipo : tipoBlocos) {
-            mesmoTipoAnterior = mesmoTipoAnterior && tipo == anterior
+    private static void analisaOperacao(List<DTOToken> lista) {
+        List<DTOToken> buffer = lista
+        DTOTipoCorresp tipoOperacao = null
+        for(DTOToken dto : buffer) {
+            tipoOperacao = valorCorrespOperacao.find{it ->
+                it.dtoTipo.dtoToken == dto}
+            if(tipoOperacao) {
+                buffer.remove(dto)
+                break
+            }
         }
-        if (mesmoTipoAnterior) {
-            return true
-        }
-        List<DTOToken> buffer = []
-        Map<Integer, DTOToken> mapPosicaoDto = [:]
-        int pos = 0
-        for (DTOToken dto : dtoTokens) {
-            if (dto in tiposTokenOperacoes*.dtoToken) {
-                mapPosicaoDto.put(pos, dto)
-            } else {
-                buffer.add(dto)
-            }   
-            pos += 1
+        Set<TipoBloco> listaTipos = (Set<TipoBloco>) buffer.collect{it -> analizaToken(it)}.toSet()
+        if(listaTipos.size() > 1 || listaTipos[0] != tipoOperacao.tipoEsperado) {
+            throw new Exception("ERRO UTILIZACAO DE TIPO NA OPERACAO ${tipoOperacao.dtoTipo.dtoToken.simb}")
         }
 
     }
