@@ -12,5 +12,6 @@ class CompileCool {
         NodeToken arvoreGerada = AnaliseSintatica.analisaTokens(listaTokens)
         Log.println('Analise Sintatica concluida')
         AnaliseSemantica.analisaArvore(arvoreGerada)
+        Log.println('Analise Semantica concluida')
     }
 }

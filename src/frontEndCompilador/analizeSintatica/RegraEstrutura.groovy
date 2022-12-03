@@ -108,7 +108,6 @@ class RegraEstrutura {
         proximaEtapa.tokenChave = casoChavePar()
         proximaEtapa.dtoCabeca = casoDtoCabeca()
         NodeToken nodeProximaEtapa = proximaEtapa.analisa()
-//        validacaoSequenciaTokens(nodeProximaEtapa)
         nodeToken.addNode(nodeProximaEtapa)
         return true
     }
@@ -152,7 +151,8 @@ class RegraEstrutura {
                 TokenPreDefinido.CLASS,
                 TokenPreDefinido.WHILE,
                 TokenPreDefinido.LOOP,
-                TokenPreDefinido.CASE
+                TokenPreDefinido.CASE,
+                TokenPreDefinido.LET,
         ]
         for(DTOToken dto : pilhaDtoLida) {
             token = TokenPreDefinido.obtemToken(dto.desc)

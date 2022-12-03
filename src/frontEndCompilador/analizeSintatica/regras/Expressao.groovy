@@ -60,14 +60,14 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.THEN, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.ELSE, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FI, { -> null }),
-                new DTOHashToken(TokenPreDefinido.WHILE, { -> null }),
-                new DTOHashToken(TokenPreDefinido.LOOP, { -> null }),
+                new DTOHashToken(TokenPreDefinido.WHILE, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.LOOP, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.POOL, { -> null }),
-                new DTOHashToken(TokenPreDefinido.LET, { -> null }),
+                new DTOHashToken(TokenPreDefinido.LET, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.DOIS_PONTOS, { -> new RType() }),
                 new DTOHashToken(TokenPreDefinido.IN, { -> null }),
-                new DTOHashToken(TokenPreDefinido.CASE, { -> null }),
-                new DTOHashToken(TokenPreDefinido.OF, { -> null }),
+                new DTOHashToken(TokenPreDefinido.CASE, { -> new Expressao() }),
+                new DTOHashToken(TokenPreDefinido.OF, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.ESAC, { -> null }),
                 new DTOHashToken(TokenPreDefinido.NEW, { -> new RType() }),
                 new DTOHashToken(TokenPreDefinido.SOMA, { -> null }),
@@ -83,7 +83,7 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.TRUE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.FALSE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.VIRGULA, { -> null }),
-                new DTOHashToken(TokenPreDefinido.PONTO, { -> null }),
+//                new DTOHashToken(TokenPreDefinido.PONTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.PONTO_VIRGULA, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ABRE_CHAVE, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FECHA_CHAVE, { -> null }),
@@ -106,7 +106,7 @@ class Expressao extends RegraEstrutura {
 
     @Override
     protected Boolean casoEspecifico(DTOToken dtoToken) {
-        if(casoEspecificoIf()) {
+        if(validaCasosEspecificosTokens()) {
             desfazProcessoAdicaoPilha()
             nodeToken.dtosDaMesmaRegra.removeLast()
             return true
@@ -188,5 +188,15 @@ class Expressao extends RegraEstrutura {
                         TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.ELSE) ||
                 (tokenChave == TokenPreDefinido.ELSE &&
                         TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.FI)
+    }
+
+    private boolean casoEspecificoLet() {
+        TokenPreDefinido tokenCabeca = TokenPreDefinido.obtemToken(dtoCabeca.desc)
+        return (tokenCabeca == TokenPreDefinido.LET &&
+                TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.IN)
+    }
+
+    private boolean validaCasosEspecificosTokens() {
+        return casoEspecificoIf() || casoEspecificoLet()
     }
 }

@@ -1,8 +1,13 @@
+class A {
+    somaUm(x:Int) : Int {
+        x <- x + 1
+    };
+};
+
 class Main {
+    a : A;
+    b : Int;
     main() : SELF_TYPE {
-        if 2 + 2 <= 4
-        then out_string("=)\n")
-        else out_string("=(\n")
-        fi
+        a.somaUm(1)
     };
 };
