@@ -17,6 +17,12 @@ class AnaliseSemanticaService {
     private static Set<DTOTipoToken> listaFeatures = []
     private static Set<DTOTipoToken> listaVariavel = []
 
+    private static List<DTOToken> listaTokensComOperacaoBoolean = [
+            new DTOToken(TokenPreDefinido.IF),
+            new DTOToken(TokenPreDefinido.CASE),
+            new DTOToken(TokenPreDefinido.WHILE)
+    ]
+
     static void analizaTiposNaArvore(NodeToken nodeToken) {
         arvoreGerada = nodeToken
         identificaClasses(nodeToken)
@@ -126,6 +132,7 @@ class AnaliseSemanticaService {
     }
 
     private static void analizaSequenciaNaoSimples(NodeToken nodeToken) {
+        validaOperacaoPorToken(nodeToken)
         if (nodeToken.proximosNodes) {
             for (NodeToken prox : nodeToken.proximosNodes) {
                 analizaSequenciaNaoSimples(prox)
@@ -204,7 +211,7 @@ class AnaliseSemanticaService {
         for (DTOToken dto : nodeToken.dtosDaMesmaRegra) {
             if (ehDtoToken(anterior, TokenPreDefinido.INHERITS)) {
                 idTipo = dto.simb
-                TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(dto)?: TipoBloco.OBJECT
+                TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(dto) ?: TipoBloco.OBJECT
                 TipoBlocoEst tipoBloco = new TipoBlocoEst(idTipo, tipoBlocoEnum)
                 tipoToken = new DTOTipoToken(dto, classe, tipoBloco, TipoEstrutura.CLASSE)
             }
@@ -236,9 +243,9 @@ class AnaliseSemanticaService {
             if (!tipoExistente(tipo, classe)) {
                 throw new Exception("TIPO DE INSTANCIA INEXISTENTE: ${tipo.simb}")
             }
-            TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(tipo)?: TipoBloco.OBJECT
+            TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(tipo) ?: TipoBloco.OBJECT
             TipoBlocoEst tipoBloco = ehDtoToken(tipo, TokenPreDefinido.SELF_TYPE) ?
-                    new TipoBlocoEst(classe.simb, tipoBlocoEnum):
+                    new TipoBlocoEst(classe.simb, tipoBlocoEnum) :
                     new TipoBlocoEst(tipo.simb, tipoBlocoEnum)
             resultado = new DTOTipoToken(classe, feature, tipoBloco, tipoEstrutura, params)
         } else {
@@ -294,7 +301,7 @@ class AnaliseSemanticaService {
         } else if (regraAtual.getClass() == RType && regraAnterior.getClass() == RFormal) {
             DTOToken dto = regraAtual.dtoCabeca
             DTOToken tipo = nodeToken.dtosDaMesmaRegra[0]
-            TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(tipo)?: TipoBloco.OBJECT
+            TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(tipo) ?: TipoBloco.OBJECT
             dtoTipoToken = new DTOTipoToken(classeAtual, dto,
                     new TipoBlocoEst(tipo.simb, tipoBlocoEnum), TipoEstrutura.VARIAVEL)
             listaDtoVariaveis.add(dtoTipoToken)
@@ -303,7 +310,7 @@ class AnaliseSemanticaService {
                 ehDtoToken(it, TokenPreDefinido.IDENTIFICADOR) && !ehFeature(it)
             }
             listaDtoVariaveis += (List<DTOTipoToken>) dtoIdentificadores.collect { it ->
-                TipoBloco tipoBloco = TipoBloco.obtemTipo(it)?: TipoBloco.OBJECT
+                TipoBloco tipoBloco = TipoBloco.obtemTipo(it) ?: TipoBloco.OBJECT
                 new DTOTipoToken(it, new TipoBlocoEst(it.simb, tipoBloco), TipoEstrutura.VARIAVEL)
             }
         }
@@ -373,7 +380,7 @@ class AnaliseSemanticaService {
             List<DTOTipoToken> variaveisDoMetodo = listaVariavel.findAll { it -> it.dtoToken in node.proximosNodes[1].dtosDaMesmaRegra }
             int pos = 0
             for (String param : parametros) {
-                TipoBloco tipoParametro = TipoBloco.obtemTipo(new DTOToken(param, TokenPreDefinido.IDENTIFICADOR.name()))?: TipoBloco.OBJECT
+                TipoBloco tipoParametro = TipoBloco.obtemTipo(new DTOToken(param, TokenPreDefinido.IDENTIFICADOR.name())) ?: TipoBloco.OBJECT
                 if (tipoParametro != variaveisDoMetodo[pos].tipoOperacao.tipoBloco) {
                     throw new Exception("TIPO DE PARAMETRO ${param} INCOMPATIVEL COM O DEFINIDO NO METODO: ${dtoTipoToken.dtoToken.simb}")
                 }
@@ -407,5 +414,25 @@ class AnaliseSemanticaService {
     private static boolean tipoExistente(DTOToken dtoToken, DTOToken classe) {
         DTOTipoToken tipoExistente = listaClasses.find { it -> it.dtoToken == dtoToken }
         return tipoExistente || TipoBloco.obtemTipo(dtoToken) || ehDtoToken(dtoToken, TokenPreDefinido.SELF_TYPE)
+    }
+
+    private static void validaOperacaoPorToken(NodeToken nodeToken) {
+        RegraEstrutura regra = nodeToken.regraNode
+        List<DTOToken> listaOperacoesBooleanas = [
+                new DTOToken(TokenPreDefinido.MAIOR),
+                new DTOToken(TokenPreDefinido.MAIOR_IGUAL),
+                new DTOToken(TokenPreDefinido.MENOR_IGUAL),
+                new DTOToken(TokenPreDefinido.MENOR)
+        ]
+        boolean possuiTokenOperadorBoooleano = false
+        if (regra.getClass() == Expressao && regra.dtoCabeca in listaTokensComOperacaoBoolean) {
+            for(DTOToken dto : listaOperacoesBooleanas) {
+                possuiTokenOperadorBoooleano = possuiTokenOperadorBoooleano ||
+                        nodeToken.dtosDaMesmaRegra.contains(dto)
+            }
+            if(!possuiTokenOperadorBoooleano) {
+                throw new Exception("CONDICAO INDEVIDA: ${regra.dtoCabeca.simb}:: ${nodeToken.dtosDaMesmaRegra*.simb.join(' ')}")
+            }
+        }
     }
 }
