@@ -1,3 +1,4 @@
+import backEndCompilador.GeradorDeCodigo
 import frontEndCompilador.analiseSemantica.AnaliseSemantica
 import frontEndCompilador.analizeLexica.AnaliseLexica
 import frontEndCompilador.analizeSintatica.AnaliseSintatica
@@ -13,5 +14,6 @@ class CompileCool {
         Log.println('Analise Sintatica concluida')
         AnaliseSemantica.analisaArvore(arvoreGerada)
         Log.println('Analise Semantica concluida')
+        GeradorDeCodigo.geraCodigo(arvoreGerada)
     }
 }

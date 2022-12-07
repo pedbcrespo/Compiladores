@@ -422,7 +422,9 @@ class AnaliseSemanticaService {
                 new DTOToken(TokenPreDefinido.MAIOR),
                 new DTOToken(TokenPreDefinido.MAIOR_IGUAL),
                 new DTOToken(TokenPreDefinido.MENOR_IGUAL),
-                new DTOToken(TokenPreDefinido.MENOR)
+                new DTOToken(TokenPreDefinido.MENOR),
+                new DTOToken(TokenPreDefinido.IGUAL)
+
         ]
         boolean possuiTokenOperadorBoooleano = false
         if (regra.getClass() == Expressao && regra.dtoCabeca in listaTokensComOperacaoBoolean) {
