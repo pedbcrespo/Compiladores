@@ -12,8 +12,8 @@ class CompileCool {
         Log.println('Analise Lexica concluida')
         NodeToken arvoreGerada = AnaliseSintatica.analisaTokens(listaTokens)
         Log.println('Analise Sintatica concluida')
-        AnaliseSemantica.analisaArvore(arvoreGerada)
+        Map<String, Object> mapDadosMapeados = AnaliseSemantica.analisaArvore(arvoreGerada)
         Log.println('Analise Semantica concluida')
-        GeradorDeCodigo.geraCodigo(arvoreGerada)
+        GeradorDeCodigo.geraCodigo(mapDadosMapeados, arvoreGerada)
     }
 }

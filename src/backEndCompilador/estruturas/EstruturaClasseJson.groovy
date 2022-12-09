@@ -8,6 +8,12 @@ class EstruturaClasseJson extends EstruturaJson {
         this.methods = []
     }
 
+    EstruturaClasseJson(String name, String type, List<EstruturaFuncaoJson> methods) {
+        super(name, type, ["methods":methods])
+        this.methods = methods
+        this.params = ["methods":methods]
+    }
+
     @Override
     Map geraInfoParaJson() {
 

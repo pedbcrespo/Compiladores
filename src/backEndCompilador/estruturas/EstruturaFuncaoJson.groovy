@@ -2,11 +2,17 @@ package backEndCompilador.estruturas
 
 class EstruturaFuncaoJson extends EstruturaJson {
 
-    List<TupInstrs> instrs
+    List<Map<String, Object>> instrs
 
     EstruturaFuncaoJson(String name, String type) {
         super(name, type, null)
         this.instrs = instrs
+    }
+
+    EstruturaFuncaoJson(String name, String type, List<Map<String, Object>> instrs) {
+        super(name, type, ["instrs":instrs])
+        this.instrs = instrs
+        this.params = ["instrs":instrs]
     }
 
     @Override
@@ -14,7 +20,7 @@ class EstruturaFuncaoJson extends EstruturaJson {
         return [
                 "name": name,
                 "type": type,
-                "instrs": instrs.collect{it -> it.retOpr()}
+                "instrs": instrs
         ]
     }
 

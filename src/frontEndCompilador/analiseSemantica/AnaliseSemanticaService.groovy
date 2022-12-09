@@ -23,7 +23,7 @@ class AnaliseSemanticaService {
             new DTOToken(TokenPreDefinido.WHILE)
     ]
 
-    static void analizaTiposNaArvore(NodeToken nodeToken) {
+    static Map<String, Object> analizaTiposNaArvore(NodeToken nodeToken) {
         arvoreGerada = nodeToken
         identificaClasses(nodeToken)
         identificaFeatures(nodeToken)
@@ -31,6 +31,12 @@ class AnaliseSemanticaService {
         juntaTudoNaListaTiposDto()
         validaInstanciasTipo(nodeToken)
         analizaSemanticaSequencias(nodeToken)
+        return [
+                "listaTiposDto": listaTiposDto,
+                "listaClasses" : listaClasses,
+                "listaFeatures": listaFeatures,
+                "listaVariavel": listaVariavel
+        ]
     }
 
     private static void analizaSemanticaSequencias(NodeToken nodeToken) {
@@ -234,6 +240,7 @@ class AnaliseSemanticaService {
         if (regraAtual.getClass() == Feature && regraAtual.dtoCabeca == feature) {
             if (ehMetodo(nodeToken, feature)) {
                 params.put('parametros', nodeToken.proximosNodes[0])
+                params.put('instrucoes', nodeToken.proximosNodes[2])
                 tipo = nodeToken.proximosNodes[1].dtosDaMesmaRegra[0]
                 tipoEstrutura = TipoEstrutura.METODO
             } else {
@@ -428,11 +435,11 @@ class AnaliseSemanticaService {
         ]
         boolean possuiTokenOperadorBoooleano = false
         if (regra.getClass() == Expressao && regra.dtoCabeca in listaTokensComOperacaoBoolean) {
-            for(DTOToken dto : listaOperacoesBooleanas) {
+            for (DTOToken dto : listaOperacoesBooleanas) {
                 possuiTokenOperadorBoooleano = possuiTokenOperadorBoooleano ||
                         nodeToken.dtosDaMesmaRegra.contains(dto)
             }
-            if(!possuiTokenOperadorBoooleano) {
+            if (!possuiTokenOperadorBoooleano) {
                 throw new Exception("CONDICAO INDEVIDA: ${regra.dtoCabeca.simb}:: ${nodeToken.dtosDaMesmaRegra*.simb.join(' ')}")
             }
         }

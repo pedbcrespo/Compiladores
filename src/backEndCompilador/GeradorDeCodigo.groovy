@@ -2,40 +2,50 @@ package backEndCompilador
 
 import backEndCompilador.estruturas.EstruturaClasseJson
 import backEndCompilador.estruturas.EstruturaFuncaoJson
-import backEndCompilador.estruturas.EstruturaJson
-import backEndCompilador.estruturas.EstruturaProgramaJson
-import backEndCompilador.estruturas.TupInstrs
 import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.analizeSintatica.regras.Classe
-import frontEndCompilador.analizeSintatica.regras.Feature
-import frontEndCompilador.analizeSintatica.regras.Programa
-import frontEndCompilador.analizeSintatica.regras.RType
+import frontEndCompilador.dto.DTOTipoToken
 import frontEndCompilador.dto.DTOToken
-import frontEndCompilador.enums.TipoBloco
-import frontEndCompilador.enums.TokenPreDefinido
 
 class GeradorDeCodigo {
+    private static Map<String, Object> arvoreMapeada
+    private static GeradorDeCodigoService geradorDeCodigoService
+    private static List<EstruturaFuncaoJson> listaEstruturaFeature
+    private static List<EstruturaClasseJson> listaEstruturaClasse
 
-    private static EstruturaJson estruturaBase
-
-    static void geraCodigo(NodeToken nodeToken) {
-
+    static void geraCodigo(Map<String, Object> mapDadosMapeados, NodeToken arvore) {
+        geradorDeCodigoService = new GeradorDeCodigoService(arvore, mapDadosMapeados)
+        arvoreMapeada = mapDadosMapeados
+        listaEstruturaFeature = montaEstruturasFeature()
+        listaEstruturaClasse = montaEstruturasClasse()
     }
 
-    private EstruturaJson geraEstruturaJson(NodeToken node, EstruturaJson estruturaAnterior = null) {
-
+    private static List<EstruturaClasseJson> montaEstruturasClasse() {
+        List<EstruturaClasseJson> estruturaClasseJsonList = []
+        List<DTOTipoToken> listaClasses = arvoreMapeada["listaClasses"] as List<DTOTipoToken>
+        for (DTOTipoToken dto : listaClasses) {
+            String name = dto.dtoToken.simb
+            String type = dto.tipoOperacao.id
+            List<EstruturaFuncaoJson> methods = buscaFeaturesClasse(dto.dtoToken)
+            estruturaClasseJsonList.add(new EstruturaClasseJson(name, type, methods))
+        }
+        return estruturaClasseJsonList
     }
 
-    private static EstruturaClasseJson geraEstruturaClasse(NodeToken nodeToken) {
-        String nome = nodeToken.dtosDaMesmaRegra[0].simb
-        String tipo = nodeToken.dtosDaMesmaRegra
-                .contains(new DTOToken(TokenPreDefinido.INHERITS)) ?
-                nodeToken.dtosDaMesmaRegra[2] : TipoBloco.OBJECT.desc
-        return new EstruturaClasseJson(nome, tipo)
+    private static List<EstruturaFuncaoJson> montaEstruturasFeature() {
+        List<EstruturaFuncaoJson> estruturaFuncaoJsonList = []
+        List<DTOTipoToken> listaFeatures = arvoreMapeada["listaFeatures"] as List<DTOTipoToken>
+        for (DTOTipoToken dto : listaFeatures) {
+            String name = dto.dtoToken.simb
+            String type = dto.tipoOperacao.id
+            List<Map<String, Object>> instrs = geradorDeCodigoService.buscaInstrucoes(dto)
+            estruturaFuncaoJsonList.add(new EstruturaFuncaoJson(name, type, instrs))
+        }
+        return estruturaFuncaoJsonList
     }
 
-    private EstruturaFuncaoJson geraEstruturaFuncao(NodeToken nodeToken) {
+    private static List<EstruturaFuncaoJson> buscaFeaturesClasse(DTOToken dtoToken) {
 
     }
 }

@@ -3,7 +3,7 @@ package frontEndCompilador.analiseSemantica
 import frontEndCompilador.analizeSintatica.NodeToken
 
 class AnaliseSemantica {
-    static void analisaArvore(NodeToken arvore) {
-        AnaliseSemanticaService.analizaTiposNaArvore(arvore)
+    static Map<String, Object> analisaArvore(NodeToken arvore) {
+        return AnaliseSemanticaService.analizaTiposNaArvore(arvore)
     }
 }
