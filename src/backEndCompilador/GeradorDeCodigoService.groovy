@@ -30,13 +30,13 @@ class GeradorDeCodigoService {
         this.mapDadosMapeados = mapDadosMapeados
     }
 
-    List<Map<String, Object>> buscaInstrucoes(DTOTipoToken dto) {
+    static List<Map<String, Object>> buscaInstrucoes(DTOTipoToken dto) {
         if (!ehMetodo(dto)) {
             return [[:]] as List<Map<String, Object>>
         }
         List<Map<String, Object>> mapList = []
         NodeToken nodeFeature = dto.params["instrucoes"]
-        List<List<DTOToken>> dtoListList = nodeFeature.dtosDaMesmaRegra.split { it -> ehToken(it, TokenPreDefinido.PONTO_VIRGULA) }
+        List<List<DTOToken>> dtoListList = separaListasPorPontoVirgula(nodeFeature.dtosDaMesmaRegra)
         Map<String, Object> map = [:]
         for (List<DTOToken> listaTokens : dtoListList) {
             if (listaTokens.size() == 1 && ehToken(listaTokens[0], TokenPreDefinido.PONTO_VIRGULA)) {
@@ -62,7 +62,7 @@ class GeradorDeCodigoService {
     }
 
     static boolean ehToken(DTOToken dtoToken, TokenPreDefinido tokenPreDefinido) {
-        return TokenPreDefinido.obtemToken(dtoToken.desc) == tokenPreDefinido
+        return !dtoToken? false: TokenPreDefinido.obtemToken(dtoToken.desc) == tokenPreDefinido
     }
 
     private static String defineOperacao(List<DTOToken> dtoTokens) {
@@ -130,10 +130,24 @@ class GeradorDeCodigoService {
         DTOToken anterior = null
         for (DTOToken dto : dtoTokens) {
             if (ehToken(anterior, TokenPreDefinido.ATRIBUICAO)) {
-                break
+                return dto.simb
             }
             anterior = dto
         }
-        return anterior
+        return null
+    }
+
+    private static List<List<DTOToken>> separaListasPorPontoVirgula(List<DTOToken> dtoTokens) {
+        List<List<DTOToken>> listaLista = []
+        List<DTOToken> lista = []
+        for(DTOToken dto : dtoTokens) {
+            if(ehToken(dto, TokenPreDefinido.PONTO_VIRGULA)) {
+                listaLista.add(lista)
+                lista = []
+                continue
+            }
+            lista.add(dto)
+        }
+        return listaLista
     }
 }

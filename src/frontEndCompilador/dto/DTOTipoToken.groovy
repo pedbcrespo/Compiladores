@@ -4,7 +4,7 @@ import frontEndCompilador.analiseSemantica.TipoBlocoEst
 import frontEndCompilador.enums.TipoEstrutura
 
 class DTOTipoToken {
-    DTOToken dtoClasse
+    DTOToken dtoClasseHeranca
     DTOToken dtoToken
     TipoEstrutura tipoEstrutura
     TipoBlocoEst tipoOperacao
@@ -16,8 +16,8 @@ class DTOTipoToken {
         this.tipoEstrutura = tipoEstrutura
     }
 
-    DTOTipoToken(DTOToken dtoClasse, DTOToken dtoToken, TipoBlocoEst tipoOperacao, TipoEstrutura tipoEstrutura, Map params =[:]) {
-        this.dtoClasse = dtoClasse
+    DTOTipoToken(DTOToken dtoClasseHeranca, DTOToken dtoToken, TipoBlocoEst tipoOperacao, TipoEstrutura tipoEstrutura, Map params =[:]) {
+        this.dtoClasseHeranca = dtoClasseHeranca
         this.dtoToken = dtoToken
         this.tipoOperacao = tipoOperacao
         this.tipoEstrutura = tipoEstrutura
@@ -30,7 +30,7 @@ class DTOTipoToken {
 
         DTOTipoToken that = (DTOTipoToken) o
 
-        if (dtoClasse != that.dtoClasse) return false
+        if (dtoClasseHeranca != that.dtoClasseHeranca) return false
         if (dtoToken != that.dtoToken) return false
         if (tipoEstrutura != that.tipoEstrutura) return false
         if (tipoOperacao != that.tipoOperacao) return false
@@ -40,7 +40,7 @@ class DTOTipoToken {
 
     int hashCode() {
         int result
-        result = (dtoClasse != null ? dtoClasse.hashCode() : 0)
+        result = (dtoClasseHeranca != null ? dtoClasseHeranca.hashCode() : 0)
         result = 31 * result + (dtoToken != null ? dtoToken.hashCode() : 0)
         result = 31 * result + (tipoEstrutura != null ? tipoEstrutura.hashCode() : 0)
         result = 31 * result + (tipoOperacao != null ? tipoOperacao.hashCode() : 0)

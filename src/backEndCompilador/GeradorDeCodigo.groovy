@@ -4,8 +4,6 @@ import backEndCompilador.estruturas.EstruturaClasseJson
 import backEndCompilador.estruturas.EstruturaFuncaoJson
 import backEndCompilador.estruturas.EstruturaProgramaJson
 import frontEndCompilador.analizeSintatica.NodeToken
-import frontEndCompilador.analizeSintatica.RegraEstrutura
-import frontEndCompilador.analizeSintatica.regras.Classe
 import frontEndCompilador.dto.DTOTipoToken
 import frontEndCompilador.dto.DTOToken
 import groovy.json.JsonOutput
@@ -55,7 +53,7 @@ class GeradorDeCodigo {
     private static List<EstruturaFuncaoJson> buscaFeaturesClasse(DTOToken dtoClasse) {
         List<DTOTipoToken> listaFeatures = arvoreMapeada["listaFeatures"] as List<DTOTipoToken>
         List<DTOTipoToken> featuresDaClasse = listaFeatures.findAll { it ->
-            it.dtoClasse == dtoClasse
+            it.dtoClasseHeranca == dtoClasse
         }
         List<String> nomeFeatures = featuresDaClasse*.dtoToken.simb
         return listaEstruturaFeature.findAll { it -> it.name in nomeFeatures }

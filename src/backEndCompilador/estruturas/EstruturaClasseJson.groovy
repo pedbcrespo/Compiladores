@@ -20,7 +20,7 @@ class EstruturaClasseJson extends EstruturaJson {
         return [
                 "name"   : name,
                 "type"   : type,
-                "methods": eachMethodInf()
+                "functions": eachMethodInf()
         ]
     }
 

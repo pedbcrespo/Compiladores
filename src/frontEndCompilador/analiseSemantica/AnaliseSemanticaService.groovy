@@ -211,24 +211,14 @@ class AnaliseSemanticaService {
     }
 
     private static DTOTipoToken geraDtoTipoTokenClasse(DTOToken classe, NodeToken nodeToken) {
-        DTOToken anterior = null
-        DTOTipoToken tipoToken = null
-        String idTipo
-        for (DTOToken dto : nodeToken.dtosDaMesmaRegra) {
-            if (ehDtoToken(anterior, TokenPreDefinido.INHERITS)) {
-                idTipo = dto.simb
-                TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(dto) ?: TipoBloco.OBJECT
-                TipoBlocoEst tipoBloco = new TipoBlocoEst(idTipo, tipoBlocoEnum)
-                tipoToken = new DTOTipoToken(dto, classe, tipoBloco, TipoEstrutura.CLASSE)
-            }
-            anterior = dto
-        }
-        if (!tipoToken) {
-            idTipo = classe.simb
-            TipoBlocoEst tipoBloco = new TipoBlocoEst(idTipo, TipoBloco.OBJECT)
-            tipoToken = new DTOTipoToken(classe, tipoBloco, TipoEstrutura.CLASSE)
-        }
-        return tipoToken
+        List<DTOToken> dtosDaMesmaRegra = nodeToken.dtosDaMesmaRegra
+        DTOToken dtoHeranca = new DTOToken('Object', TokenPreDefinido.IDENTIFICADOR.name())
+        dtoHeranca = dtosDaMesmaRegra.contains(new DTOToken(TokenPreDefinido.INHERITS)) ? dtosDaMesmaRegra[2] : dtoHeranca
+        String idTipo = dtoHeranca.simb
+        TipoBloco tipoBlocoEnum = TipoBloco.obtemTipo(dtoHeranca) ?: TipoBloco.OBJECT
+        TipoBlocoEst tipoBloco = new TipoBlocoEst(idTipo, tipoBlocoEnum)
+        return new DTOTipoToken(dtoHeranca, classe, tipoBloco, TipoEstrutura.CLASSE)
+
     }
 
     private static DTOTipoToken geraDtoTipoTokenFeature(DTOToken feature, NodeToken nodeToken, DTOToken classe) {
@@ -246,6 +236,7 @@ class AnaliseSemanticaService {
             } else {
                 tipo = nodeToken.proximosNodes[0].dtosDaMesmaRegra[0]
                 tipoEstrutura = TipoEstrutura.ATRIBUTO
+                params = verificaValorInicial(nodeToken)
             }
             if (!tipoExistente(tipo, classe)) {
                 throw new Exception("TIPO DE INSTANCIA INEXISTENTE: ${tipo.simb}")
@@ -355,7 +346,7 @@ class AnaliseSemanticaService {
             it.dtoToken.simb == nomeAtributoChamadorDoMetodo &&
                     it.tipoEstrutura == TipoEstrutura.ATRIBUTO
         }
-        if (variavelChamadoraDoMetodo.tipoOperacao.id != metodoChamado.dtoClasse.simb) {
+        if (variavelChamadoraDoMetodo.tipoOperacao.id != metodoChamado.dtoClasseHeranca.simb) {
             throw new Exception("ATRIBUTO: ${nomeAtributoChamadorDoMetodo} NAO PODE CHAMAR METODO DE OUTRO TIPO")
         }
         List<DTOToken> parametrosPassadosChamadaMetodo = buscaParametrosPassadosMetodo(nodeDaChamada, dto)
@@ -443,5 +434,15 @@ class AnaliseSemanticaService {
                 throw new Exception("CONDICAO INDEVIDA: ${regra.dtoCabeca.simb}:: ${nodeToken.dtosDaMesmaRegra*.simb.join(' ')}")
             }
         }
+    }
+
+    private static Map verificaValorInicial(NodeToken nodeAtual) {
+        RegraEstrutura regra = nodeAtual.regraNode
+        List<DTOToken> dtosDaMesmaRegra = nodeAtual.dtosDaMesmaRegra
+        if(dtosDaMesmaRegra.contains(new DTOToken(TokenPreDefinido.ATRIBUICAO))) {
+            NodeToken nodeExpressao = nodeAtual.proximosNodes[1]
+            return ["atribuicao": nodeExpressao.dtosDaMesmaRegra]
+        }
+        return [:]
     }
 }

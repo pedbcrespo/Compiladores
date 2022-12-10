@@ -83,7 +83,6 @@ class Expressao extends RegraEstrutura {
                 new DTOHashToken(TokenPreDefinido.TRUE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.FALSE, { -> null }),
                 new DTOHashToken(TokenPreDefinido.VIRGULA, { -> null }),
-//                new DTOHashToken(TokenPreDefinido.PONTO, { -> null }),
                 new DTOHashToken(TokenPreDefinido.PONTO_VIRGULA, { -> null }),
                 new DTOHashToken(TokenPreDefinido.ABRE_CHAVE, { -> new Expressao() }),
                 new DTOHashToken(TokenPreDefinido.FECHA_CHAVE, { -> null }),
@@ -194,6 +193,12 @@ class Expressao extends RegraEstrutura {
         TokenPreDefinido tokenCabeca = TokenPreDefinido.obtemToken(dtoCabeca.desc)
         return (tokenCabeca == TokenPreDefinido.LET &&
                 TokenPreDefinido.obtemToken(dtoTokenFornecida.desc) == TokenPreDefinido.IN)
+    }
+
+    private boolean casoEspecificoAtribuicao() {
+        TokenPreDefinido tokenCabeca = TokenPreDefinido.obtemToken(dtoCabeca.desc)
+        TokenPreDefinido tokenFornecido = TokenPreDefinido.obtemToken(dtoTokenFornecida.desc)
+        return tokenCabeca == TokenPreDefinido.ATRIBUICAO && tokenFornecido == TokenPreDefinido.PONTO_VIRGULA
     }
 
     private boolean validaCasosEspecificosTokens() {
