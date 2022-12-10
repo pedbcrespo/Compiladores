@@ -2,11 +2,13 @@ package backEndCompilador
 
 import backEndCompilador.estruturas.EstruturaClasseJson
 import backEndCompilador.estruturas.EstruturaFuncaoJson
+import backEndCompilador.estruturas.EstruturaProgramaJson
 import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.analizeSintatica.RegraEstrutura
 import frontEndCompilador.analizeSintatica.regras.Classe
 import frontEndCompilador.dto.DTOTipoToken
 import frontEndCompilador.dto.DTOToken
+import groovy.json.JsonOutput
 
 class GeradorDeCodigo {
     private static Map<String, Object> arvoreMapeada
@@ -19,6 +21,11 @@ class GeradorDeCodigo {
         arvoreMapeada = mapDadosMapeados
         listaEstruturaFeature = montaEstruturasFeature()
         listaEstruturaClasse = montaEstruturasClasse()
+        EstruturaProgramaJson estruturaProgramaJson = new EstruturaProgramaJson()
+        estruturaProgramaJson.classes = listaEstruturaClasse
+        String arvoreJson = JsonOutput.toJson(estruturaProgramaJson.geraInfoParaJson())
+        File file = new File("arvore.json")
+        file.write(JsonOutput.prettyPrint(arvoreJson))
     }
 
     private static List<EstruturaClasseJson> montaEstruturasClasse() {
@@ -45,7 +52,12 @@ class GeradorDeCodigo {
         return estruturaFuncaoJsonList
     }
 
-    private static List<EstruturaFuncaoJson> buscaFeaturesClasse(DTOToken dtoToken) {
-
+    private static List<EstruturaFuncaoJson> buscaFeaturesClasse(DTOToken dtoClasse) {
+        List<DTOTipoToken> listaFeatures = arvoreMapeada["listaFeatures"] as List<DTOTipoToken>
+        List<DTOTipoToken> featuresDaClasse = listaFeatures.findAll { it ->
+            it.dtoClasse == dtoClasse
+        }
+        List<String> nomeFeatures = featuresDaClasse*.dtoToken.simb
+        return listaEstruturaFeature.findAll { it -> it.name in nomeFeatures }
     }
 }
