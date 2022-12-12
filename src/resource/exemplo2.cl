@@ -2,7 +2,7 @@ class Ex {
     x : Int;
     a: SELF_TYPE;
     conta(i:Int) : Int {
-        x <- x + 1
+        i <- i + 1
     };
 };
 

@@ -73,7 +73,7 @@ class GeradorDeCodigoService {
                 break
             }
         }
-        return convTipo ? convTipo.tipo : ConvTipo.CONST
+        return convTipo ? convTipo.tipo : ConvTipo.CONST.tipo
     }
 
     private static String defineTipoOperacao(String op, List<DTOToken> dtoTokens) {
@@ -140,6 +140,9 @@ class GeradorDeCodigoService {
     private static List<List<DTOToken>> separaListasPorPontoVirgula(List<DTOToken> dtoTokens) {
         List<List<DTOToken>> listaLista = []
         List<DTOToken> lista = []
+        if(!dtoTokens.find{it->ehToken(it, TokenPreDefinido.PONTO_VIRGULA)}) {
+            return [dtoTokens]
+        }
         for(DTOToken dto : dtoTokens) {
             if(ehToken(dto, TokenPreDefinido.PONTO_VIRGULA)) {
                 listaLista.add(lista)
