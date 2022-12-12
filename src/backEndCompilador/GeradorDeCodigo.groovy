@@ -44,8 +44,9 @@ class GeradorDeCodigo {
         for (DTOTipoToken dto : listaFeatures) {
             String name = dto.dtoToken.simb
             String type = dto.tipoOperacao.id
+            List<Map<String, Object>> args = geradorDeCodigoService.buscaParametros(dto)
             List<Map<String, Object>> instrs = geradorDeCodigoService.buscaInstrucoes(dto)
-            estruturaFuncaoJsonList.add(new EstruturaFuncaoJson(name, type, instrs))
+            estruturaFuncaoJsonList.add(new EstruturaFuncaoJson(name, type, instrs, args))
         }
         return estruturaFuncaoJsonList
     }

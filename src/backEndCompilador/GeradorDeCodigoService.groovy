@@ -37,7 +37,7 @@ class GeradorDeCodigoService {
         List<Map<String, Object>> mapList = []
         NodeToken nodeFeature = dto.params["instrucoes"]
         List<List<DTOToken>> dtoListList = separaListasPorPontoVirgula(nodeFeature.dtosDaMesmaRegra)
-        Map<String, Object> map = [:]
+        Map<String, Object> map
         for (List<DTOToken> listaTokens : dtoListList) {
             if (listaTokens.size() == 1 && ehToken(listaTokens[0], TokenPreDefinido.PONTO_VIRGULA)) {
                 continue
@@ -149,5 +149,20 @@ class GeradorDeCodigoService {
             lista.add(dto)
         }
         return listaLista
+    }
+
+    static List<Map<String, String>> buscaParametros(DTOTipoToken dtoTipoToken) {
+        if(dtoTipoToken.tipoEstrutura != TipoEstrutura.METODO) {
+            return []
+        }
+        NodeToken nodeParametros = dtoTipoToken.params['parametros']
+        List<DTOToken> listaDtoParametros = nodeParametros.dtosDaMesmaRegra.findAll{it ->
+            ehToken(it, TokenPreDefinido.IDENTIFICADOR)
+        }
+        List<DTOTipoToken> listaVariaveis = mapDadosMapeados['listaVariavel'] as List<DTOTipoToken>
+        return listaDtoParametros? listaDtoParametros.collect { it ->
+            String type = listaVariaveis.find{tipoToken -> tipoToken.dtoToken == it}?.tipoOperacao?.id
+            ["name": it.simb, "type": type]
+        } : []
     }
 }
