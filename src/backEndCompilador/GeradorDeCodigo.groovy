@@ -6,6 +6,7 @@ import backEndCompilador.estruturas.EstruturaProgramaJson
 import frontEndCompilador.analizeSintatica.NodeToken
 import frontEndCompilador.dto.DTOTipoToken
 import frontEndCompilador.dto.DTOToken
+import frontEndCompilador.enums.TipoEstrutura
 import groovy.json.JsonOutput
 
 class GeradorDeCodigo {
@@ -46,7 +47,9 @@ class GeradorDeCodigo {
             String type = dto.tipoOperacao.id
             List<Map<String, Object>> args = geradorDeCodigoService.buscaParametros(dto)
             List<Map<String, Object>> instrs = geradorDeCodigoService.buscaInstrucoes(dto)
-            estruturaFuncaoJsonList.add(new EstruturaFuncaoJson(name, type, instrs, args))
+            TipoEstrutura tipoEstrutura = geradorDeCodigoService.ehMetodo(dto)? TipoEstrutura.METODO : TipoEstrutura.ATRIBUTO
+            EstruturaFuncaoJson estruturaFuncaoJson = new EstruturaFuncaoJson(name, type, instrs, args, tipoEstrutura)
+            estruturaFuncaoJsonList.add(estruturaFuncaoJson)
         }
         return estruturaFuncaoJsonList
     }

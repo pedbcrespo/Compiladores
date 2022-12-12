@@ -1,30 +1,30 @@
 package backEndCompilador.estruturas
 
-class EstruturaFuncaoJson extends EstruturaJson {
+import frontEndCompilador.enums.TipoEstrutura
 
+class EstruturaFuncaoJson extends EstruturaJson {
+    TipoEstrutura tipoEstrutura
     List<Map<String, Object>> instrs
     List<Map<String, Object>> args
 
-    EstruturaFuncaoJson(String name, String type) {
-        super(name, type, null)
+    EstruturaFuncaoJson(String name, String type, List<Map<String, Object>> instrs, List<Map<String, Object>> args, TipoEstrutura tipoEstrutura) {
+        super(name, type, ["instrs": instrs])
         this.instrs = instrs
-    }
-
-    EstruturaFuncaoJson(String name, String type, List<Map<String, Object>> instrs, List<Map<String, Object>> args) {
-        super(name, type, ["instrs":instrs])
-        this.instrs = instrs
-        this.params = ["instrs":instrs]
+        this.params = ["instrs": instrs]
         this.args = args
+        this.tipoEstrutura = tipoEstrutura
     }
 
     @Override
     Map geraInfoParaJson() {
-        return [
+        Map<String, Object> mapResultado = [
                 "name": name,
-                "type": type,
-                "args": args,
-                "instrs": instrs
+                "type": type.toLowerCase(),
         ]
+        if (tipoEstrutura == TipoEstrutura.METODO) {
+            mapResultado.putAll(["args"  : args,"instrs": instrs])
+        }
+        return mapResultado
     }
 
 }

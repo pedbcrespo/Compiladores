@@ -47,17 +47,19 @@ class GeradorDeCodigoService {
             String dest = defineDestinoOperacao(listaTokens)
             if (ehCasoOperacao(listaTokens)) {
                 List<String> args = defineArgsOperacao(listaTokens)
-                map = ["op": op, "type": tipo, "dest": dest, "args": args]
+                map = ["op": op, "type": tipo.toLowerCase(), "dest": dest, "args": args]
             } else {
                 String valor = defineValorAtribuicao(listaTokens)
-                map = ["op": op, "type": tipo, "dest": dest, "value": valor]
+                map = ["op": op, "type": tipo.toLowerCase(), "dest": dest, "value": valor]
             }
             mapList.add(map)
         }
+        String ret = buscaValorRetorno(dto)
+        mapList.add(["ret":ret])
         return mapList
     }
 
-    private static boolean ehMetodo(DTOTipoToken dtoTipoToken) {
+    static boolean ehMetodo(DTOTipoToken dtoTipoToken) {
         return dtoTipoToken.tipoEstrutura == TipoEstrutura.METODO
     }
 
@@ -165,7 +167,15 @@ class GeradorDeCodigoService {
         List<DTOTipoToken> listaVariaveis = mapDadosMapeados['listaVariavel'] as List<DTOTipoToken>
         return listaDtoParametros? listaDtoParametros.collect { it ->
             String type = listaVariaveis.find{tipoToken -> tipoToken.dtoToken == it}?.tipoOperacao?.id
-            ["name": it.simb, "type": type]
+            ["name": it.simb, "type": type.toLowerCase()]
         } : []
+    }
+
+    static String buscaValorRetorno(DTOTipoToken dto) {
+        NodeToken nodeFeature = dto.params["instrucoes"]
+        List<List<DTOToken>> dtoListList = separaListasPorPontoVirgula(nodeFeature.dtosDaMesmaRegra)
+        List<DTOToken> ultimaLinha = dtoListList.last()
+        String dest =  defineDestinoOperacao(ultimaLinha)
+        return dest
     }
 }
