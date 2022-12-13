@@ -8,7 +8,8 @@ enum ConvTipo {
     SUB(TokenPreDefinido.SUBTRACAO, 'sub'),
     MUL(TokenPreDefinido.ASTERISTICO, 'mul'),
     DIV(TokenPreDefinido.DIVISAO, 'mul'),
-    CONST(TokenPreDefinido.IDENTIFICADOR, 'const')
+    CONST(TokenPreDefinido.IDENTIFICADOR, 'const'),
+    CALL(null, 'call')
 
     TokenPreDefinido token
     String tipo
@@ -21,6 +22,6 @@ enum ConvTipo {
     static ConvTipo obtem(DTOToken dtoToken) {
         return values().find { it ->
             TokenPreDefinido.obtemToken(dtoToken.desc) == it.token
-        }
+        }?:CONST
     }
 }

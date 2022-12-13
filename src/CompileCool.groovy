@@ -15,5 +15,6 @@ class CompileCool {
         Map<String, Object> mapDadosMapeados = AnaliseSemantica.analisaArvore(arvoreGerada)
         Log.println('Analise Semantica concluida')
         GeradorDeCodigo.geraCodigo(mapDadosMapeados, arvoreGerada)
+        Log.println('Gerando codigo para o bril')
     }
 }

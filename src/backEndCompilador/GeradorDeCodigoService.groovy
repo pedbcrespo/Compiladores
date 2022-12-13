@@ -38,6 +38,7 @@ class GeradorDeCodigoService {
         NodeToken nodeFeature = dto.params["instrucoes"]
         List<List<DTOToken>> dtoListList = separaListasPorPontoVirgula(nodeFeature.dtosDaMesmaRegra)
         Map<String, Object> map
+
         for (List<DTOToken> listaTokens : dtoListList) {
             if (listaTokens.size() == 1 && ehToken(listaTokens[0], TokenPreDefinido.PONTO_VIRGULA)) {
                 continue
@@ -47,15 +48,16 @@ class GeradorDeCodigoService {
             String dest = defineDestinoOperacao(listaTokens)
             if (ehCasoOperacao(listaTokens)) {
                 List<String> args = defineArgsOperacao(listaTokens)
-                map = ["op": op, "type": tipo.toLowerCase(), "dest": dest, "args": args]
+                map = ["op": op, "type": tipo, "dest": dest, "args": args]
             } else {
                 String valor = defineValorAtribuicao(listaTokens)
-                map = ["op": op, "type": tipo.toLowerCase(), "dest": dest, "value": valor]
+                map = ["op": op, "type": tipo, "dest": dest, "value": valor]
             }
             mapList.add(map)
+            mapList += trataChamadasDeMetodos(listaTokens)
         }
         String ret = buscaValorRetorno(dto)
-        mapList.add(["ret":ret])
+        mapList.add(["ret": ret])
         return mapList
     }
 
@@ -63,19 +65,28 @@ class GeradorDeCodigoService {
         return dtoTipoToken.tipoEstrutura == TipoEstrutura.METODO
     }
 
+    static DTOTipoToken retMetodo(String nomeMetodo) {
+        List<DTOTipoToken> listaTipoToken = mapDadosMapeados['listaFeatures'] as List<DTOTipoToken>
+        DTOTipoToken dto = listaTipoToken.find { it -> it.dtoToken.simb == nomeMetodo }
+        return dto ? dto.tipoEstrutura == TipoEstrutura.METODO ? dto : null : null
+    }
+
     static boolean ehToken(DTOToken dtoToken, TokenPreDefinido tokenPreDefinido) {
-        return !dtoToken? false: TokenPreDefinido.obtemToken(dtoToken.desc) == tokenPreDefinido
+        return !dtoToken ? false : TokenPreDefinido.obtemToken(dtoToken.desc) == tokenPreDefinido
     }
 
     private static String defineOperacao(List<DTOToken> dtoTokens) {
-        ConvTipo convTipo = null
-        for (DTOToken dto : dtoTokens) {
-            convTipo = ConvTipo.obtem(dto)
-            if (convTipo && convTipo != ConvTipo.CONST) {
-                break
+        ConvTipo convTipo = ConvTipo.CONST
+        DTOToken casoOperacaoAritmedica = dtoTokens.find{it -> it in listaTokenOperacao }
+        if(casoOperacaoAritmedica) {
+            for (DTOToken dto : dtoTokens) {
+                convTipo = ConvTipo.obtem(dto)
+                if (convTipo != ConvTipo.CONST) {
+                    break
+                }
             }
         }
-        return convTipo ? convTipo.tipo : ConvTipo.CONST.tipo
+        return convTipo.tipo
     }
 
     private static String defineTipoOperacao(String op, List<DTOToken> dtoTokens) {
@@ -93,7 +104,7 @@ class GeradorDeCodigoService {
                 anterior = dto
             }
         }
-        return listaTiposDto.find { it -> it.dtoToken == anterior }?.tipoOperacao?.id
+        return listaTiposDto.find { it -> it.dtoToken == anterior }?.tipoOperacao?.id?.toLowerCase()
     }
 
     private static String defineDestinoOperacao(List<DTOToken> dtoTokens) {
@@ -120,12 +131,12 @@ class GeradorDeCodigoService {
     }
 
     private static List<String> defineArgsOperacao(List<DTOToken> dtoTokens) {
-        List<DTOToken> filtrado = dtoTokens[1..dtoTokens.size()-1]
+        List<DTOToken> filtrado = dtoTokens[1..dtoTokens.size() - 1]
         List<DTOToken> args = [] as List<DTOToken>
         for (DTOToken dto : filtrado) {
-            args += ehToken(dto, TokenPreDefinido.IDENTIFICADOR)? dto : []
+            args += ehToken(dto, TokenPreDefinido.IDENTIFICADOR) ? dto : []
         }
-        return args?.collect{it -> it.simb}
+        return args?.collect { it -> it.simb }
     }
 
     private static String defineValorAtribuicao(List<DTOToken> dtoTokens) {
@@ -142,11 +153,11 @@ class GeradorDeCodigoService {
     private static List<List<DTOToken>> separaListasPorPontoVirgula(List<DTOToken> dtoTokens) {
         List<List<DTOToken>> listaLista = []
         List<DTOToken> lista = []
-        if(!dtoTokens.find{it->ehToken(it, TokenPreDefinido.PONTO_VIRGULA)}) {
+        if (!dtoTokens.find { it -> ehToken(it, TokenPreDefinido.PONTO_VIRGULA) }) {
             return [dtoTokens]
         }
-        for(DTOToken dto : dtoTokens) {
-            if(ehToken(dto, TokenPreDefinido.PONTO_VIRGULA)) {
+        for (DTOToken dto : dtoTokens) {
+            if (ehToken(dto, TokenPreDefinido.PONTO_VIRGULA)) {
                 listaLista.add(lista)
                 lista = []
                 continue
@@ -157,16 +168,16 @@ class GeradorDeCodigoService {
     }
 
     static List<Map<String, String>> buscaParametros(DTOTipoToken dtoTipoToken) {
-        if(dtoTipoToken.tipoEstrutura != TipoEstrutura.METODO) {
+        if (dtoTipoToken.tipoEstrutura != TipoEstrutura.METODO) {
             return []
         }
         NodeToken nodeParametros = dtoTipoToken.params['parametros']
-        List<DTOToken> listaDtoParametros = nodeParametros.dtosDaMesmaRegra.findAll{it ->
+        List<DTOToken> listaDtoParametros = nodeParametros.dtosDaMesmaRegra.findAll { it ->
             ehToken(it, TokenPreDefinido.IDENTIFICADOR)
         }
         List<DTOTipoToken> listaVariaveis = mapDadosMapeados['listaVariavel'] as List<DTOTipoToken>
-        return listaDtoParametros? listaDtoParametros.collect { it ->
-            String type = listaVariaveis.find{tipoToken -> tipoToken.dtoToken == it}?.tipoOperacao?.id
+        return listaDtoParametros ? listaDtoParametros.collect { it ->
+            String type = listaVariaveis.find { tipoToken -> tipoToken.dtoToken == it }?.tipoOperacao?.id
             ["name": it.simb, "type": type.toLowerCase()]
         } : []
     }
@@ -175,7 +186,38 @@ class GeradorDeCodigoService {
         NodeToken nodeFeature = dto.params["instrucoes"]
         List<List<DTOToken>> dtoListList = separaListasPorPontoVirgula(nodeFeature.dtosDaMesmaRegra)
         List<DTOToken> ultimaLinha = dtoListList.last()
-        String dest =  defineDestinoOperacao(ultimaLinha)
+        String dest = defineDestinoOperacao(ultimaLinha)
         return dest
+    }
+
+    private static List<Map<String, Object>> trataChamadasDeMetodos(List<DTOToken> dtoTokens) {
+        List<Map<String, Object>> listaMap = []
+        Map<String, Object> map = [:]
+        int pos = 0
+        for(DTOToken dto : dtoTokens) {
+            if(ehChamadaDeMetodo(dto)) {
+                String nomeMetodo = dto.simb.contains('.')? dto.simb.split('.')[1] : dto.simb
+                DTOTipoToken metodo = retMetodo(nomeMetodo)
+                String op = ConvTipo.CALL
+                String type = metodo.tipoOperacao.id.toLowerCase()
+                String name = nomeMetodo
+                NodeToken node = metodo.params['instrucoes']
+                List<Map<String, Object>> args = argsMetodo(metodo, node.proximosNodes )
+                map = ["op": op, "type":type, "name": name, "args": args]
+                listaMap.add(map)
+            }
+            pos += 1
+        }
+        return listaMap
+    }
+
+    private static boolean ehChamadaDeMetodo(DTOToken dtoToken) {
+        String nomeMetodo = dtoToken.simb.contains('.')? dtoToken.simb.split('.')[1] : dtoToken.simb
+        DTOTipoToken metodo = retMetodo(nomeMetodo)
+        return metodo
+    }
+
+    private static List<Map<String, Object>> argsMetodo(DTOTipoToken dtoTipoTokens, List<NodeToken> listaNodes) {
+
     }
 }
