@@ -86,7 +86,7 @@ class GeradorDeCodigoService {
                 }
             }
         }
-        return convTipo.tipo
+        return convTipo.tipo.toLowerCase()
     }
 
     private static String defineTipoOperacao(String op, List<DTOToken> dtoTokens) {
@@ -192,7 +192,7 @@ class GeradorDeCodigoService {
 
     private static List<Map<String, Object>> trataChamadasDeMetodos(List<DTOToken> dtoTokens, DTOTipoToken dtoTipoToken) {
         List<Map<String, Object>> listaMap = []
-        Map<String, Object> map = [:]
+        Map<String, Object> map
         int pos = 0
         for(DTOToken dto : dtoTokens) {
             if(ehChamadaDeMetodo(dto)) {
@@ -200,7 +200,7 @@ class GeradorDeCodigoService {
                         .substring(dto.simb.indexOf('.'))
                         .replaceFirst('.', '') : dto.simb
                 DTOTipoToken metodo = retMetodo(nomeMetodo)
-                String op = ConvTipo.CALL
+                String op = ConvTipo.CALL.tipo
                 String type = metodo.tipoOperacao.id
                 String name = nomeMetodo
                 NodeToken node = dtoTipoToken.params['instrucoes']

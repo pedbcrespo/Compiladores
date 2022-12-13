@@ -9,7 +9,7 @@ enum ConvTipo {
     MUL(TokenPreDefinido.ASTERISTICO, 'mul'),
     DIV(TokenPreDefinido.DIVISAO, 'mul'),
     CONST(TokenPreDefinido.IDENTIFICADOR, 'const'),
-    CALL(null, 'call')
+    CALL(TokenPreDefinido.IDENTIFICADOR, 'call')
 
     TokenPreDefinido token
     String tipo

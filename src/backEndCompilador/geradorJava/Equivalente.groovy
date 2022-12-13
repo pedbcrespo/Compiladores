@@ -14,4 +14,9 @@ enum Equivalente {
         this.valor = valor
         this.traducao = traducao
     }
+
+    static String obtem(String tipoFornecido) {
+        Equivalente equivalente = values().find{it -> it.valor == tipoFornecido}
+        return equivalente? equivalente.traducao : tipoFornecido
+    }
 }

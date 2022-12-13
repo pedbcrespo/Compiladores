@@ -5,6 +5,5 @@ class Main {
     x : Int;
     main(): Int {
       x <- somaUm(1);
-    }
     };
 };

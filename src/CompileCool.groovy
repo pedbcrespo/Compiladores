@@ -19,6 +19,6 @@ class CompileCool {
         GeradorDeCodigo.geraCodigo(mapDadosMapeados, arvoreGerada)
         Log.println('Codigo cool gerado')
         Log.println('Traduzindo para codigo Java')
-        GeradorCodigoJava.traduzParaCodigoJava()
+//        GeradorCodigoJava.traduzParaCodigoJava()
     }
 }
