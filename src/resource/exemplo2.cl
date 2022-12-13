@@ -1,6 +1,4 @@
 class Ex {
-    x : Int;
-    a: SELF_TYPE;
     conta(i:Int) : Int {
         i <- i + 1
     };

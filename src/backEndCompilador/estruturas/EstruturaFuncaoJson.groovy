@@ -19,7 +19,7 @@ class EstruturaFuncaoJson extends EstruturaJson {
     Map geraInfoParaJson() {
         Map<String, Object> mapResultado = [
                 "name": name,
-                "type": type.toLowerCase(),
+                "type": type,
         ]
         if (tipoEstrutura == TipoEstrutura.METODO) {
             mapResultado.putAll(["args"  : args,"instrs": instrs])

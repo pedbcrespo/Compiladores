@@ -54,7 +54,7 @@ class GeradorDeCodigoService {
                 map = ["op": op, "type": tipo, "dest": dest, "value": valor]
             }
             mapList.add(map)
-            mapList += trataChamadasDeMetodos(listaTokens)
+            mapList += trataChamadasDeMetodos(listaTokens, dto)
         }
         String ret = buscaValorRetorno(dto)
         mapList.add(["ret": ret])
@@ -94,7 +94,7 @@ class GeradorDeCodigoService {
         DTOToken anterior = null
         List<DTOTipoToken> listaTiposDto = mapDadosMapeados["listaTiposDto"] as List<DTOTipoToken>
         if (op in listaOp) {
-            return 'int'
+            return 'Int'
         } else {
             anterior = null
             for (DTOToken dto : dtoTokens) {
@@ -104,7 +104,7 @@ class GeradorDeCodigoService {
                 anterior = dto
             }
         }
-        return listaTiposDto.find { it -> it.dtoToken == anterior }?.tipoOperacao?.id?.toLowerCase()
+        return listaTiposDto.find { it -> it.dtoToken == anterior }?.tipoOperacao?.id
     }
 
     private static String defineDestinoOperacao(List<DTOToken> dtoTokens) {
@@ -178,7 +178,7 @@ class GeradorDeCodigoService {
         List<DTOTipoToken> listaVariaveis = mapDadosMapeados['listaVariavel'] as List<DTOTipoToken>
         return listaDtoParametros ? listaDtoParametros.collect { it ->
             String type = listaVariaveis.find { tipoToken -> tipoToken.dtoToken == it }?.tipoOperacao?.id
-            ["name": it.simb, "type": type.toLowerCase()]
+            ["name": it.simb, "type": type]
         } : []
     }
 
@@ -190,19 +190,21 @@ class GeradorDeCodigoService {
         return dest
     }
 
-    private static List<Map<String, Object>> trataChamadasDeMetodos(List<DTOToken> dtoTokens) {
+    private static List<Map<String, Object>> trataChamadasDeMetodos(List<DTOToken> dtoTokens, DTOTipoToken dtoTipoToken) {
         List<Map<String, Object>> listaMap = []
         Map<String, Object> map = [:]
         int pos = 0
         for(DTOToken dto : dtoTokens) {
             if(ehChamadaDeMetodo(dto)) {
-                String nomeMetodo = dto.simb.contains('.')? dto.simb.split('.')[1] : dto.simb
+                String nomeMetodo = dto.simb.contains('.')? dto.simb
+                        .substring(dto.simb.indexOf('.'))
+                        .replaceFirst('.', '') : dto.simb
                 DTOTipoToken metodo = retMetodo(nomeMetodo)
                 String op = ConvTipo.CALL
-                String type = metodo.tipoOperacao.id.toLowerCase()
+                String type = metodo.tipoOperacao.id
                 String name = nomeMetodo
-                NodeToken node = metodo.params['instrucoes']
-                List<Map<String, Object>> args = argsMetodo(metodo, node.proximosNodes )
+                NodeToken node = dtoTipoToken.params['instrucoes']
+                List<String> args = argsMetodo(metodo, node.proximosNodes[0] )
                 map = ["op": op, "type":type, "name": name, "args": args]
                 listaMap.add(map)
             }
@@ -212,12 +214,15 @@ class GeradorDeCodigoService {
     }
 
     private static boolean ehChamadaDeMetodo(DTOToken dtoToken) {
-        String nomeMetodo = dtoToken.simb.contains('.')? dtoToken.simb.split('.')[1] : dtoToken.simb
+        String nomeMetodo = dtoToken.simb.contains('.')? dtoToken.simb
+                .substring(dtoToken.simb.indexOf('.'))
+                .replaceFirst('.', '') : dtoToken.simb
         DTOTipoToken metodo = retMetodo(nomeMetodo)
         return metodo
     }
 
-    private static List<Map<String, Object>> argsMetodo(DTOTipoToken dtoTipoTokens, List<NodeToken> listaNodes) {
-
+    private static List<String> argsMetodo(DTOTipoToken dtoTipoTokens, NodeToken nodeParametros) {
+        List<DTOToken> tokensParametro = nodeParametros.dtosDaMesmaRegra
+        return tokensParametro*.simb
     }
 }
