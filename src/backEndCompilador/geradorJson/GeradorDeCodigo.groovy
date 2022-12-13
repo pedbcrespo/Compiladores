@@ -1,4 +1,4 @@
-package backEndCompilador
+package backEndCompilador.geradorJson
 
 import backEndCompilador.estruturas.EstruturaClasseJson
 import backEndCompilador.estruturas.EstruturaFuncaoJson
@@ -23,7 +23,7 @@ class GeradorDeCodigo {
         EstruturaProgramaJson estruturaProgramaJson = new EstruturaProgramaJson()
         estruturaProgramaJson.classes = listaEstruturaClasse
         String arvoreJson = JsonOutput.toJson(estruturaProgramaJson.geraInfoParaJson())
-        File file = new File("arvore.json")
+        File file = new File("codigoCool.json")
         file.write(JsonOutput.prettyPrint(arvoreJson))
     }
 

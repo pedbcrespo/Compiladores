@@ -1,4 +1,4 @@
-package backEndCompilador
+package backEndCompilador.geradorJson
 
 
 import frontEndCompilador.analizeSintatica.NodeToken

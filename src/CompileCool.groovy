@@ -1,4 +1,5 @@
-import backEndCompilador.GeradorDeCodigo
+import backEndCompilador.geradorJava.GeradorCodigoJava
+import backEndCompilador.geradorJson.GeradorDeCodigo
 import frontEndCompilador.analiseSemantica.AnaliseSemantica
 import frontEndCompilador.analizeLexica.AnaliseLexica
 import frontEndCompilador.analizeSintatica.AnaliseSintatica
@@ -14,7 +15,10 @@ class CompileCool {
         Log.println('Analise Sintatica concluida')
         Map<String, Object> mapDadosMapeados = AnaliseSemantica.analisaArvore(arvoreGerada)
         Log.println('Analise Semantica concluida')
-        GeradorDeCodigo.geraCodigo(mapDadosMapeados, arvoreGerada)
         Log.println('Gerando codigo para o bril')
+        GeradorDeCodigo.geraCodigo(mapDadosMapeados, arvoreGerada)
+        Log.println('Codigo cool gerado')
+        Log.println('Traduzindo para codigo Java')
+        GeradorCodigoJava.traduzParaCodigoJava()
     }
 }
