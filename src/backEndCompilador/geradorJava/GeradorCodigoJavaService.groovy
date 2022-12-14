@@ -2,6 +2,7 @@ package backEndCompilador.geradorJava
 
 class GeradorCodigoJavaService {
     private Map mapJson
+    private List<Map<String, String>> variaveisCriadas = []
 
     GeradorCodigoJavaService(Map mapJson) {
         this.mapJson = mapJson
@@ -24,7 +25,7 @@ class GeradorCodigoJavaService {
         for (Map<String, Object> instrucao : instrucoes) {
             String op = instrucao['op']
             String txt = ''
-            if(op) {
+            if (op) {
                 lstTxt.add(trataCasoOperacao(instrucao, op))
             } else {
                 String ret = instrucao['ret']
@@ -35,13 +36,20 @@ class GeradorCodigoJavaService {
         return lstTxt.join(';\n')
     }
 
-    private static String trataCasoOperacao(Map<String, Object> instrucao, String op) {
-        if(op == null){
-
-        }
+    private String trataCasoOperacao(Map<String, Object> instrucao, String op) {
         OperacaoEqv operacaoEqv = OperacaoEqv.obtem(op)
-        if(operacaoEqv == OperacaoEqv.CALL) {
+        String txt = ''
+        if (operacaoEqv == OperacaoEqv.CALL) {
 
         }
+
+    }
+
+    private String geraVariavel(String tipo, String nomeOpr) {
+        Random random = new Random()
+        int num = variaveisCriadas.size() > 0 ? variaveisCriadas.size() : 1
+        String variavel = "${tipo} vari${random.nextInt(10**num)}"
+        variaveisCriadas.add(["nome": nomeOpr, "tipo":tipo, "variavel":variavel])
+        return variavel
     }
 }
