@@ -5,8 +5,8 @@ enum OperacaoEqv {
     SUB('sub', {List<String> args -> args.join(' - ')}),
     DIV('div', {List<String> args -> args.join(' / ')}),
     MUL('mul', {List<String> args -> args.join(' * ')}),
-    CALL('call', {Object x -> x})
-
+    CALL('call', {Object x -> x}),
+    CONST('const', {Object x -> x})
     String desc
     Closure<Object> funcConvert
 
