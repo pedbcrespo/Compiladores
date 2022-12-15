@@ -54,6 +54,7 @@ class GeradorCodigoJava {
         for (Map<String, Object> atributo : atributos) {
             String name = atributo['name']
             String type = Equivalente.obtem(atributo['type'] as String)
+            geradorCodigoJavaService.salvaVariavel(name, type)
             lstTxt.add("${type} ${name};")
         }
         return lstTxt.join('\n')

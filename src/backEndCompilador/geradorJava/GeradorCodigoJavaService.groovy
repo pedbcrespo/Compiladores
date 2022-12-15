@@ -3,7 +3,7 @@ package backEndCompilador.geradorJava
 class GeradorCodigoJavaService {
     private Map mapJson
     private static List<Map<String, String>> variaveisCriadas = []
-
+    private static List<OperacaoEqv> operacoesAritmedicas = [OperacaoEqv.ADD, OperacaoEqv.SUB, OperacaoEqv.MUL, OperacaoEqv.DIV]
     GeradorCodigoJavaService(Map mapJson) {
         this.mapJson = mapJson
     }
@@ -15,13 +15,11 @@ class GeradorCodigoJavaService {
 
         for (Map<String, Object> argumento : argumentos) {
             String name = argumento['name']
+            String type = Equivalente.obtem(argumento['type'] as String)
             Map<String, String> argumentoRegistrado = variaveisCriadas.find { it -> it['nome'] as String == name }
             if (!argumentoRegistrado) {
-                variaveisCriadas.add "nome": argumento['name'] as String,
-                        "tipo": Equivalente.obtem(argumento['type'] as String) ,
-                        "variavel": argumento['name'] as String
+                salvaVariavel(name, type)
             }
-            String type = Equivalente.obtem(argumento['type'] as String)
             lstTxt.add("${type} ${name}")
         }
         return lstTxt.join(', ')
@@ -44,35 +42,49 @@ class GeradorCodigoJavaService {
         return lstTxt.join('\n')
     }
 
+    static void salvaVariavel(String nomeAtributo, String tipo) {
+        variaveisCriadas.add(["nome": nomeAtributo, "tipo": tipo, "variavel": nomeAtributo])
+    }
+
+    static String buscaVariavel(String nome) {
+        Map<String, String> map = variaveisCriadas.find{it -> (it['nome'] as String) == nome ||
+                (it['variavel'] as String) == nome }
+        return map? map['variavel'] : null
+    }
+
     private static String trataCasoOperacao(Map<String, Object> instrucao, String op) {
         OperacaoEqv operacaoEqv = OperacaoEqv.obtem(op)
         String txt = ''
         if (operacaoEqv == OperacaoEqv.CALL) {
             txt = "${geraVariavel(Equivalente.obtem(instrucao['type'] as String), instrucao['name'] as String)}" +
                     " = ${instrucao['name']}(${(instrucao['args'] as List<String>).join(', ')});"
-        } else if (operacaoEqv in [OperacaoEqv.ADD, OperacaoEqv.SUB, OperacaoEqv.MUL, OperacaoEqv.DIV]) {
+        } else if (operacaoEqv in operacoesAritmedicas) {
             String variavel = geraVariavel(Equivalente.obtem(instrucao['type'] as String), instrucao['dest'] as String)
             txt = "${variavel} = ${operacaoEqv.funcConvert(instrucao['args'])};"
         } else if (operacaoEqv == OperacaoEqv.CONST) {
             String value = trataValor(instrucao['value'] as String, instrucao)
-            txt = "${Equivalente.obtem(instrucao['type'] as String)} ${instrucao['dest']} = ${value};"
+            String constVariavel = geraVariavel(Equivalente.obtem(instrucao['type'] as String), instrucao['dest'] as String)
+            txt = "${constVariavel} = ${value};"
         }
         return txt
     }
 
+    private static String trataValor(String value, Map<String, Object> instrs) {
+        String valor = value
+        Map<String, String> mapVariavel = variaveisCriadas.find {it -> it['nome'] == valor ||
+        it['variavel'] == valor}
+        return mapVariavel ? mapVariavel["variavel"] : valor
+    }
+
     private static String geraVariavel(String tipo, String nomeOpr) {
+        String res = buscaVariavel(nomeOpr)
+        if(res) {
+            return res
+        }
         Random random = new Random()
         int num = variaveisCriadas.size() > 0 ? variaveisCriadas.size() : 1
         String variavel = "vari${random.nextInt(10**num)}"
         variaveisCriadas.add(["nome": nomeOpr, "tipo": tipo, "variavel": variavel])
         return "${tipo} ${variavel}"
-    }
-
-    private static String trataValor(String value, Map<String, Object> instrs) {
-        String valor = value
-        Map<String, String> mapVariavel = variaveisCriadas.find { it ->
-            it["nome"] == value
-        }
-        return mapVariavel ? mapVariavel["variavel"] : valor
     }
 }
