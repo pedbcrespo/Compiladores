@@ -203,7 +203,7 @@ class GeradorDeCodigoService {
                 DTOTipoToken metodo = retMetodo(nomeMetodo)
                 String op = ConvTipo.CALL.tipo
                 String type = metodo.tipoOperacao.id
-                String name = nomeMetodo
+                String name = dto.simb
                 NodeToken node = dtoTipoToken.params['instrucoes']
                 List<String> args = argsMetodo(metodo, node.proximosNodes[0])
                 map = ["op": op, "type": type, "name": name, "args": args]
