@@ -22,6 +22,8 @@ class GeradorCodigoJava {
         String codigoTraduzido = traduzClasses()
         File fileJava = new File('codigoTraduzidoJava.java')
         fileJava.write(codigoTraduzido)
+        String dir = System.getProperty("user.dir")
+        executaCompilacao(fileJava, dir)
     }
 
     private static String traduzClasses() {
@@ -55,7 +57,8 @@ class GeradorCodigoJava {
             String name = atributo['name']
             String type = Equivalente.obtem(atributo['type'] as String)
             geradorCodigoJavaService.salvaVariavel(name, type)
-            lstTxt.add("${type} ${name};")
+            String instancia = ehTipoPrimitivo(type)? "${type} ${name};" : "${type} ${name} = new ${type}();"
+            lstTxt.add(instancia)
         }
         return lstTxt.join('\n')
     }
@@ -74,5 +77,41 @@ class GeradorCodigoJava {
             lstTxt.add("${type} ${name} (${args}) { ${instrs} }")
         }
         return lstTxt.join('\n')
+    }
+
+    private static void executaCompilacao(File arquivoJava, String dir) throws IOException, InterruptedException {
+        String[] cmds = [
+            "cmd /c start cmd.exe",
+            "cd ${dir}",
+            "javac ${arquivoJava.name}"
+        ]
+
+        try {
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c",
+                    String.join("& ", cmds));
+
+            builder.redirectErrorStream(true);
+
+            Process p = builder.start();
+
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+
+            while (true) {
+                line = r.readLine();
+                if (line == null) {
+                    break;
+                }
+
+                System.out.println(line);
+            }
+        } catch(Exception e) {
+            System.err.println(e);
+        }
+    }
+
+    private static boolean ehTipoPrimitivo(String tipo) {
+        List<String> tipoPrimitivo = ['String', 'Integer', 'Boolean']
+        return tipo in tipoPrimitivo
     }
 }
