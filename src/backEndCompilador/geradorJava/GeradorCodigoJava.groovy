@@ -7,8 +7,6 @@ class GeradorCodigoJava {
     private static GeradorCodigoJavaService geradorCodigoJavaService
 
     static void traduzParaCodigoJava() {
-
-
         File arquivoCodigoGerado = new File('D:\\Users\\Pedro\\Documents\\Programacao\\Groovy\\untitled\\codigoCool.json')
         BufferedReader obj = new BufferedReader(new FileReader(arquivoCodigoGerado))
         List<String> listaPalavras = []
