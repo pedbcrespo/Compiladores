@@ -2,9 +2,9 @@ package backEndCompilador.geradorJava
 
 import groovy.json.JsonSlurper
 
-class GeradorCodigoJava {
+class TradutorCodigoJson {
     private static Map mapJson
-    private static GeradorCodigoJavaService geradorCodigoJavaService
+    private static TradutorCodigoJsonService tradutorCodigoService
 
     static void traduzParaCodigoJava() {
         File arquivoCodigoGerado = new File('D:\\Users\\Pedro\\Documents\\Programacao\\Groovy\\untitled\\codigoCool.json')
@@ -16,12 +16,12 @@ class GeradorCodigoJava {
         }
         def jsonSlurper = new JsonSlurper()
         mapJson = jsonSlurper.parseText(listaPalavras.join(' ')) as Map
-        geradorCodigoJavaService = new GeradorCodigoJavaService(mapJson)
+        tradutorCodigoService = new TradutorCodigoJsonService(mapJson)
         String codigoTraduzido = traduzClasses()
-        File fileJava = new File('codigoTraduzidoJava.java')
+        File fileJava = new File(tradutorCodigoService.NOME_ARQUIVO)
         fileJava.write(codigoTraduzido)
         String dir = System.getProperty("user.dir")
-        executaCompilacao(fileJava, dir)
+        tradutorCodigoService.executaCompilacao(fileJava, dir)
     }
 
     private static String traduzClasses() {
@@ -54,7 +54,7 @@ class GeradorCodigoJava {
         for (Map<String, Object> atributo : atributos) {
             String name = atributo['name']
             String type = Equivalente.obtem(atributo['type'] as String)
-            geradorCodigoJavaService.salvaVariavel(name, type)
+            tradutorCodigoService.salvaVariavel(name, type)
             String instancia = ehTipoPrimitivo(type)? "${type} ${name};" : "${type} ${name} = new ${type}();"
             lstTxt.add(instancia)
         }
@@ -70,42 +70,11 @@ class GeradorCodigoJava {
         for (Map<String, Object> metodo : metodos) {
             String name = metodo['name']
             String type = Equivalente.obtem(metodo['type'] as String)
-            String args = geradorCodigoJavaService.trataArgumentos(metodo)
-            String instrs = geradorCodigoJavaService.trataInstrucoes(metodo)
+            String args = tradutorCodigoService.trataArgumentos(metodo)
+            String instrs = tradutorCodigoService.trataInstrucoes(metodo)
             lstTxt.add("${type} ${name} (${args}) { ${instrs} }")
         }
         return lstTxt.join('\n')
-    }
-
-    private static void executaCompilacao(File arquivoJava, String dir) throws IOException, InterruptedException {
-        String[] cmds = [
-            "cmd /c start cmd.exe",
-            "cd ${dir}",
-            "javac ${arquivoJava.name}"
-        ]
-
-        try {
-            ProcessBuilder builder = new ProcessBuilder("cmd", "/c",
-                    String.join("& ", cmds));
-
-            builder.redirectErrorStream(true);
-
-            Process p = builder.start();
-
-            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
-            String line;
-
-            while (true) {
-                line = r.readLine();
-                if (line == null) {
-                    break;
-                }
-
-                System.out.println(line);
-            }
-        } catch(Exception e) {
-            System.err.println(e);
-        }
     }
 
     private static boolean ehTipoPrimitivo(String tipo) {

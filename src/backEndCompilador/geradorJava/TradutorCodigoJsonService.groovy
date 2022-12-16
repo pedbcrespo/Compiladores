@@ -1,10 +1,12 @@
 package backEndCompilador.geradorJava
 
-class GeradorCodigoJavaService {
+class TradutorCodigoJsonService {
+    String NOME_ARQUIVO = 'codigoTraduzidoJava.java'
     private Map mapJson
     private static List<Map<String, String>> variaveisCriadas = []
     private static List<OperacaoEqv> operacoesAritmedicas = [OperacaoEqv.ADD, OperacaoEqv.SUB, OperacaoEqv.MUL, OperacaoEqv.DIV]
-    GeradorCodigoJavaService(Map mapJson) {
+
+    TradutorCodigoJsonService(Map mapJson) {
         this.mapJson = mapJson
     }
 
@@ -51,6 +53,38 @@ class GeradorCodigoJavaService {
                 (it['variavel'] as String) == nome }
         return map? map['variavel'] : null
     }
+
+    static void executaCompilacao(File arquivoJava, String dir) throws IOException, InterruptedException {
+        String[] cmds = [
+                "cmd /c start cmd.exe",
+                "cd ${dir}",
+                "javac ${arquivoJava.name}"
+        ]
+
+        try {
+            ProcessBuilder builder = new ProcessBuilder("cmd", "/c",
+                    String.join("& ", cmds));
+
+            builder.redirectErrorStream(true);
+
+            Process p = builder.start();
+
+            BufferedReader r = new BufferedReader(new InputStreamReader(p.getInputStream()));
+            String line;
+
+            while (true) {
+                line = r.readLine();
+                if (line == null) {
+                    break;
+                }
+
+                System.out.println(line);
+            }
+        } catch(Exception e) {
+            System.err.println(e);
+        }
+    }
+
 
     private static String trataCasoOperacao(Map<String, Object> instrucao, String op) {
         OperacaoEqv operacaoEqv = OperacaoEqv.obtem(op)

@@ -1,4 +1,4 @@
-import backEndCompilador.geradorJava.GeradorCodigoJava
+import backEndCompilador.geradorJava.TradutorCodigoJson
 import backEndCompilador.geradorJson.GeradorDeCodigo
 import frontEndCompilador.analiseSemantica.AnaliseSemantica
 import frontEndCompilador.analizeLexica.AnaliseLexica
@@ -19,6 +19,6 @@ class CompileCool {
         GeradorDeCodigo.geraCodigo(mapDadosMapeados, arvoreGerada)
         Log.println('Codigo cool gerado')
         Log.println('Traduzindo para codigo Java')
-        GeradorCodigoJava.traduzParaCodigoJava()
+        TradutorCodigoJson.traduzParaCodigoJava()
     }
 }
