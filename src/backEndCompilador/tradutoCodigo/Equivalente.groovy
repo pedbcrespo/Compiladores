@@ -1,4 +1,4 @@
-package backEndCompilador.geradorJava
+package backEndCompilador.tradutoCodigo
 
 enum Equivalente {
     INT('Int', 'Integer'),

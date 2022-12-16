@@ -1,4 +1,4 @@
-package backEndCompilador.geradorJava
+package backEndCompilador.tradutoCodigo
 
 import groovy.json.JsonSlurper
 
@@ -41,7 +41,7 @@ class TradutorCodigoJson {
         if (type != 'Object') {
             txt += " extends ${type}"
         }
-        txt += "{ ${traduzAtributos(classe)}\n${traduzMetodos(classe)} }"
+        txt += "{ ${traduzAtributos(classe)} ${traduzMetodos(classe)} }"
         return txt
     }
 
@@ -55,7 +55,7 @@ class TradutorCodigoJson {
             String name = atributo['name']
             String type = Equivalente.obtem(atributo['type'] as String)
             tradutorCodigoService.salvaVariavel(name, type)
-            String instancia = ehTipoPrimitivo(type)? "${type} ${name};" : "${type} ${name} = new ${type}();"
+            String instancia = tradutorCodigoService.geraInstancia(type, name)
             lstTxt.add(instancia)
         }
         return lstTxt.join('\n')
@@ -72,13 +72,8 @@ class TradutorCodigoJson {
             String type = Equivalente.obtem(metodo['type'] as String)
             String args = tradutorCodigoService.trataArgumentos(metodo)
             String instrs = tradutorCodigoService.trataInstrucoes(metodo)
-            lstTxt.add("${type} ${name} (${args}) { ${instrs} }")
+            lstTxt.add(tradutorCodigoService.geraInstanciaMetodo(type, name, args, instrs))
         }
         return lstTxt.join('\n')
-    }
-
-    private static boolean ehTipoPrimitivo(String tipo) {
-        List<String> tipoPrimitivo = ['String', 'Integer', 'Boolean']
-        return tipo in tipoPrimitivo
     }
 }

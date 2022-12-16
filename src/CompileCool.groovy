@@ -1,4 +1,4 @@
-import backEndCompilador.geradorJava.TradutorCodigoJson
+import backEndCompilador.tradutoCodigo.TradutorCodigoJson
 import backEndCompilador.geradorJson.GeradorDeCodigo
 import frontEndCompilador.analiseSemantica.AnaliseSemantica
 import frontEndCompilador.analizeLexica.AnaliseLexica

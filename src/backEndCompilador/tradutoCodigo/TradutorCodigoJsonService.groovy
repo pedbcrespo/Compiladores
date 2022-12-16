@@ -1,4 +1,4 @@
-package backEndCompilador.geradorJava
+package backEndCompilador.tradutoCodigo
 
 class TradutorCodigoJsonService {
     String NOME_ARQUIVO = 'codigoTraduzidoJava.java'
@@ -85,6 +85,18 @@ class TradutorCodigoJsonService {
         }
     }
 
+    static String geraInstancia(String tipo, String nome) {
+        return ehTipoPrimitivo(tipo)? "${tipo} ${nome};" : "${tipo} ${nome} = new ${tipo}();"
+    }
+
+    static String geraInstanciaMetodo(String type, String name, String args, String instrs) {
+        return "${type} ${name}(${args}) { ${instrs} }"
+    }
+
+    private static boolean ehTipoPrimitivo(String tipo) {
+        List<String> tipoPrimitivo = ['String', 'Integer', 'Boolean']
+        return tipo in tipoPrimitivo
+    }
 
     private static String trataCasoOperacao(Map<String, Object> instrucao, String op) {
         OperacaoEqv operacaoEqv = OperacaoEqv.obtem(op)

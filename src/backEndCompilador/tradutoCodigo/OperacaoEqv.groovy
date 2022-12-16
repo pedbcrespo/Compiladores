@@ -1,4 +1,4 @@
-package backEndCompilador.geradorJava
+package backEndCompilador.tradutoCodigo
 
 enum OperacaoEqv {
     ADD('add', {List<String> args -> args.join(' + ')}),
